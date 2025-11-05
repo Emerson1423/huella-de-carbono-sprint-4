@@ -106,7 +106,14 @@ const routes = [
     path: '/eventos',
     name: 'eventos',
     component: () => import('../views/eventosView.vue')
-  }
+  },
+       {
+    path: '/recicla',
+    name: 'recicla',
+    component: () => import('../views/juego1View.vue'),
+     meta: { requiresAuth: true }
+
+  },  
 
 
 ];

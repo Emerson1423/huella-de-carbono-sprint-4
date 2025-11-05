@@ -4,14 +4,6 @@ const session = require('express-session');
 require('dotenv').config();
 const passport = require('./config/passport');
 const app = express();
-
-const authRoutes = require('./routes/auth');
-const huellaRoutes = require('./routes/huella');
-const passwordResetRoutes = require('./routes/passwordReset');
-const googleOAuthRoutes = require('./routes/googleOauth');
-const updatePerfilRoutes = require('./routes/updatePerfil');
-const estadisticasHuellaRoutes = require('./routes/estadisticasHuella')
-
 app.use(cors());
 app.use(express.json());
 app.use(session({
@@ -19,6 +11,16 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
 }));
+
+const authRoutes = require('./routes/auth');
+const huellaRoutes = require('./routes/huella');
+const passwordResetRoutes = require('./routes/passwordReset');
+const googleOAuthRoutes = require('./routes/googleOauth');
+const updatePerfilRoutes = require('./routes/updatePerfil');
+const estadisticasHuellaRoutes = require('./routes/estadisticasHuella')
+const juego1Routes = require('./routes/juego1');
+
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use('/api', authRoutes);
@@ -27,6 +29,7 @@ app.use('/api', passwordResetRoutes);
 app.use('/api', googleOAuthRoutes);
 app.use('/api',updatePerfilRoutes);
 app.use('/api', estadisticasHuellaRoutes);
+app.use('/api/juego1', juego1Routes);
 
 
 const PORT = 3000;
