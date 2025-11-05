@@ -1,0 +1,10 @@
+cd backend
+npm install
+node server.js
+
+en otra terminal ejecutar:
+
+cd frontend
+npm install
+npm run serve
+

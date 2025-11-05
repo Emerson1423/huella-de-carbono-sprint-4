@@ -1,0 +1,79 @@
+/* Botones.css */
+.filter-btn {
+  padding: 12px 24px;
+  background: var(--light, #2e7d32);
+  border: none;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: var(--dark, #ffffff);
+  font-family: 'Poppins', sans-serif;
+  margin-top: auto;
+}
+
+.filter-btn.green {
+    background: #339436;
+    color: #ffffff;
+}
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+.filter-btn.gray {
+    background: #686b6d;
+    color: #ffffff;
+}
+.filter-btn.red {
+    background: #e53935;
+    color: #ffffff;
+}
+.filter-btn:hover { background: #164c18; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3); }
+.filter-btn.gray:hover { background: #4b4e50; }
+
+.filter-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(63, 43, 43, 0.15);
+}
+
+.filter-btn.active {
+  background-color: #8bc34a9a;
+}
+.filter-btn.active.red {
+    background-color: #e573739a;
+}
+.link-btn:hover { background: #1b5e20; }
+
+.filter-btn:disabled, filter-btn[disabled] {
+  background: #646464;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.filter-btn:disabled:hover, filter-btn[disabled]:hover {
+  transform: none;
+  box-shadow: none;
+  
+}
+.link-btn {
+  display: inline-block;
+  background: #2e7d32;
+  color: white;
+  text-decoration: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+.link-btn.red { background: #f52222; }
+.link-btn.red:hover { background: #a40303; }
+
+/*Titulos y textos*/
+.content {
+  font-family: 'Poppins', sans-serif;
+  color: var(--dark, #333);
+  margin-bottom: 5px;
+  font-size: 1rem;
+}
