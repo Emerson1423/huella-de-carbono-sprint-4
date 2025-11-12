@@ -7,17 +7,21 @@
     <br>
     <br>
     <perfilComponente></perfilComponente>
+    <br>
+    <footerComponente></footerComponente>
 </template>
 
 <script>
 /* eslint-disable */
 import perfilComponente from '@/components/perfilComponente.vue'
 import NavComponente from '@/components/NavComponente.vue';
+import footerComponente from '@/components/footerComponente.vue';
 
 export default {
     components: {
         perfilComponente,
-        NavComponente
+        NavComponente,
+        footerComponente
     }
 }
 </script>

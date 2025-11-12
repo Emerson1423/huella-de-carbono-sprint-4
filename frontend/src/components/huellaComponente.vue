@@ -1,5 +1,5 @@
 <template>
-  <div>
+  
     <div class="header-huella">
       <h1>Calcular tu huella ecológica</h1>
       <img src="@/assets/img/Huella.png" alt="huella" class="icono-huella" />
@@ -118,7 +118,7 @@
       <button @click="calcularHuella" class="filter-btn green">Calcular</button>
     </div>
   </div>
-</div>
+
 </template>
 
 <script>
@@ -355,8 +355,8 @@ methods: {
 
 .header-huella {
   text-align: center;
-  margin-bottom: 20px;
-  margin-top: auto;
+  margin-bottom: 0px;
+  margin-top:100px;
   display: flex;
   justify-content: center;
   align-items: center;

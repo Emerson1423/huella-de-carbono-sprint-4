@@ -1,6 +1,7 @@
 <template>
     <NavComponente></NavComponente>
     <reciclaComponent></reciclaComponent>
+    <footerComponente></footerComponente>
 
 
  
@@ -11,6 +12,7 @@
 
 import reciclaComponent from '@/components/reciclaComponent.vue';
 import NavComponente from '@/components/NavComponente.vue';
+import footerComponente from '@/components/footerComponente.vue';
 
 
 
@@ -18,7 +20,8 @@ export default {
     components:
     {
         reciclaComponent,
-        NavComponente
+        NavComponente,
+        footerComponente
         
     }
 }
