@@ -1,63 +1,51 @@
 <template>
   <footer class="salvambiente-footer">
-    <div class="footer-content">
-      <!-- Sección Información -->
-      <div class="footer-section">
-        <div class="footer-logo">
-          <h3>Salvambiente</h3>
+    <div class="salvambiente-container">
+      <div class="footer-content">
+        <!-- Sección Información -->
+        <div class="footer-section animate-on-scroll">
+          <div class="footer-logo">
+            <h3>Salvambiente</h3>
+          </div>
           <p class="footer-description">
             Pequeños cambios, generan impacto. Sé parte de este pequeño inicio hacia el movimiento sostenible.
           </p>
         </div>
-        <div class="social-links">
-          <a href="#" class="social-link" aria-label="Facebook">
-            <i class="fab fa-facebook-f"></i>
-          </a>
-          <a href="#" class="social-link" aria-label="Instagram">
-            <i class="fab fa-instagram"></i>
-          </a>
-          <a href="#" class="social-link" aria-label="Twitter">
-            <i class="fab fa-twitter"></i>
-          </a>
-          <a href="#" class="social-link" aria-label="YouTube">
-            <i class="fab fa-youtube"></i>
-          </a>
+
+        <!-- Enlaces del sitio web -->
+        <div class="footer-section animate-on-scroll">
+          <h4 class="footer-heading">Enlaces Rápidos</h4>
+          <ul class="footer-links">
+            <li><router-link to="/noticias">Noticias</router-link></li>
+            <li><router-link to="/eventos">Eventos</router-link></li>
+            <li><router-link to="/curiosidades">Curiosidades</router-link></li>
+            <li><router-link to="/huella">Cálculo CO2</router-link></li>
+            <li><router-link to="/entretenimiento">Entretenimiento</router-link></li>
+          </ul>
+        </div>
+
+        <!-- Contacto -->
+        <div class="footer-section animate-on-scroll">
+          <h4 class="footer-heading">Contacto</h4>
+          <ul class="contact-list">
+            <li>
+              <i class="fas fa-envelope"></i>
+              <span>equiposalvambiente@gmail.com</span>
+            </li>
+            <li>
+              <i class="fas fa-phone"></i>
+              <span>+503 2257-7777</span>
+            </li>
+            <li>
+              <i class="fas fa-map-marker-alt"></i>
+              <span>San Miguel, El Salvador</span>
+            </li>
+          </ul>
         </div>
       </div>
 
-      <!-- Enlaces rápidos -->
-      <div class="footer-section">
-        <h4>Enlaces Rápidos</h4>
-        <ul class="footer-links">
-         
-        </ul>
-      </div>
-
-      <!-- Contacto -->
-      <div class="footer-section">
-        <h4>Contacto</h4>
-        <div class="contact-info">
-          <div class="contact-item">
-            <i class="fas fa-envelope"></i>
-            <span>equiposalvambiente@gmail.com</span>
-          </div>
-          <div class="contact-item">
-            <i class="fas fa-phone"></i>
-            <span>+503 2257-7777 </span>
-          </div>
-          <div class="contact-item">
-            <i class="fas fa-map-marker-alt"></i>
-            <span>San Miguel, El Salvador</span>
-          </div>
-        </div>
-        
-
-      </div>
-    </div>
-
-    <!-- Copyright -->
-    <div class="footer-bottom">
-      <div class="footer-bottom-content">
+      <!-- Copyright -->
+      <div class="copyright animate-on-scroll">
         <p>&copy; {{ currentYear }} Salvambiente. Todos los derechos reservados.</p>
         <div class="legal-links">
           <p>Política de Privacidad</p>
@@ -73,166 +61,232 @@ export default {
   name: 'SalvambienteFooter',
   data() {
     return {
-     
       currentYear: new Date().getFullYear()
     }
   },
+  mounted() {
+    // Animación al hacer scroll
+    this.initScrollAnimation();
+  },
+  methods: {
+    initScrollAnimation() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      });
 
+      document.querySelectorAll('.animate-on-scroll').forEach(el => {
+        observer.observe(el);
+      });
+    }
+  }
 }
 </script>
 
 <style scoped>
 .salvambiente-footer {
-  background: linear-gradient(135deg, #ffffff 0%, #39aa26 100%);
-  color: #1c1d1c;
-  padding: 3rem 0 0 0;
-  margin-top: auto;
   font-family: 'Poppins', sans-serif;
+  background: #067c2f;
+  padding: 4rem 0 2rem;
+  border-top: 4px solid #93ba89;
 
+}
 
+.salvambiente-footer * {
+  box-sizing: border-box;
+}
+
+.salvambiente-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
 }
 
 .footer-content {
-  max-width: auto;
-  margin: 0 auto;
-  padding: 0 2rem;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
+  gap: 2.5rem;
+  margin-bottom: 2.25rem;
+  align-items: start;
 }
 
-.footer-section h3 {
-  color: #1c1d1c;
-  margin-bottom: 1rem;
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
   font-size: 1.5rem;
-}
-
-.footer-section h4 {
-  color: #1c1d1c;
+  color: #FFFFFF;
   margin-bottom: 1rem;
-  font-size: 1.1rem;
 }
 
-.footer-section h5 {
-  color: #1c1d1c;
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
+.footer-logo h3 {
+  color:#FFFFFF;
+  margin: 0;
 }
 
 .footer-description {
-  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 1.5rem;
-  color: #1c1d1c;
+  line-height: 1.6;
+  font-size: 0.95rem;
 }
 
-.social-links {
-  display: flex;
-  gap: 1rem;
+.footer-heading {
+  color: #FFFFFF;
+  margin-bottom: 1.25rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  position: relative;
+  padding-bottom: 0.5rem;
 }
 
-.social-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.footer-heading::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
   width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  color: #1c1d1c;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-.social-link:hover {
-  background: #429044;
-  transform: translateY(-2px);
+  height: 2px;
+  background: #4CAF50;
+  border-radius: 2px;
 }
 
 .footer-links {
   list-style: none;
   padding: 0;
-}
-
-.footer-links li {
-  margin-bottom: 0.5rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
 }
 
 .footer-links a {
-  color: #1c1d1c;
+  color: rgba(255, 255, 255, 0.9);
   text-decoration: none;
-  transition: color 0.3s ease;
+  transition: all .28s ease;
+  padding: 0.25rem 0;
+  display: inline-block;
+  position: relative;
 }
 
-.footer-links a:hover {
-  color: #53a155;
+.footer-links a:hover,
+.footer-links a:focus {
+  color: #8BC34A;
+  transform: translateX(8px);
+  outline: none;
 }
 
-.contact-info {
-  margin-bottom: 1.5rem;
+.contact-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
+  color: rgba(255, 255, 255, 0.9);
 }
 
-.contact-item {
+.contact-list li {
   display: flex;
   align-items: center;
-  margin-bottom: 0.5rem;
-  color: #1c1d1c;
+  transition: all .28s ease;
+  padding: 0.25rem 0;
 }
 
-.contact-item i {
-  margin-right: 0.5rem;
-  color: #1c1d1c;
-  width: 20px;
+.contact-list li:hover {
+  transform: translateX(4px);
 }
 
-
-.footer-bottom {
+.contact-list i {
+  margin-right: .8rem;
+  opacity: .9;
+  width: 16px;
+  text-align: center;
+  color: #4CAF50;
+}
+.copyright {
+  text-align: center;
+  padding-top: 2rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  margin-top: 2rem;
-  padding: 1.5rem 0;
-}
-
-.footer-bottom-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.legal-links {
-  display: flex;
-  gap: 1.5rem;
-}
-
-.legal-links p {
-  color: #1c1d1c;
-  text-decoration: none;
+  color: rgba(255, 255, 255, 0.8);
   font-size: 0.9rem;
-  transition: color 0.3s ease;
 }
 
+.copyright .legal-links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1rem;
+}
 
+.copyright .legal-links p {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all .28s ease;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.copyright .legal-links p:hover {
+  color: #FFFFFF;
+}
+
+/* Animación al hacer scroll */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+
+.is-visible {
+  opacity: 1;
+  transform: none;
+}
 
 /* Responsive */
 @media (max-width: 768px) {
   .footer-content {
     grid-template-columns: 1fr;
     text-align: center;
+    gap: 2rem;
   }
-
-  .footer-bottom-content {
+  
+  .footer-heading::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .copyright .legal-links {
     flex-direction: column;
-    text-align: center;
+    gap: 0.5rem;
   }
-
+  
   .social-links {
     justify-content: center;
   }
+  
+  .contact-list li {
+    justify-content: center;
+  }
+}
 
-  .contact-item {
+@media (max-width: 480px) {
+  .salvambiente-footer {
+    padding: 3rem 0 1.5rem;
+  }
+
+  .salvambiente-container {
+    padding: 0 1rem;
+  }
+  
+  .footer-logo {
     justify-content: center;
   }
 }

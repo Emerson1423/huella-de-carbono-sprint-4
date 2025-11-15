@@ -255,7 +255,7 @@ export default {
 /* Responsive */
 @media (max-width: 900px) {
   .grid {
-    grid-template-columns: 1fr 1fr; /* 2 en tablets */
+    grid-template-columns: 2fr; /* 2 en tablets */
   }
 }
 @media (max-width: 600px) {
