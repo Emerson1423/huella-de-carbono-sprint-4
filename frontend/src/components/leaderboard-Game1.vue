@@ -39,9 +39,11 @@ export default {
 
 <style scoped>
 .leaderboard-section {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 2px solid #eee;
+  margin: 20px auto 0 auto; 
+  padding: 15px;
+  border-top: 2px solid #24bf71;
+  max-width: 500px; 
+  width: 90%; 
 }
 
 .leaderboard-section h3 {
@@ -53,6 +55,7 @@ export default {
 .leaderboard-list {
   max-height: 200px;
   overflow-y: auto;
+  background-color: #c5d5c4;
 }
 
 .leaderboard-item {
@@ -61,9 +64,8 @@ export default {
   align-items: center;
   padding: 8px 12px;
   margin: 5px 0;
-  background: #f8f9fa;
+  background: #c5d5c4;
   border-radius: 8px;
-
 }
 
 .rank {
@@ -101,6 +103,11 @@ export default {
 }
 
 @media (max-width: 768px) {
+  .leaderboard-section {
+    max-width: 400px; /* ← Más pequeño en tablets */
+    width: 95%;
+  }
+  
   .leaderboard-item {
     flex-wrap: wrap;
     gap: 5px;
@@ -111,6 +118,14 @@ export default {
     width: 100%;
     text-align: center;
     margin-top: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .leaderboard-section {
+    max-width: 350px; /* ← Más pequeño en móviles */
+    width: 100%;
+    padding: 10px;
   }
 }
 </style>

@@ -34,7 +34,7 @@
     <div class="slide fade">
       <img src="@/assets/img/slide4.png" alt="Imagen 6">
       <div class="slide-content">
-        <h2>RECUERDA LAS 4 R</h2>
+        <h2>RECUERDA LAS 3 R</h2>
         <p>Reciclar es una forma de darle una segunda vida a los materiales.</p>
       </div>
     </div>

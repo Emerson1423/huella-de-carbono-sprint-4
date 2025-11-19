@@ -21,15 +21,18 @@
         </div>
       </div>
     </div>
+    <footerComponente></footerComponente>
 </template>
 
 <script>
 import NavComponente from '@/components/NavComponente.vue';
+import footerComponente from '@/components/footerComponente.vue';
 
 export default {
   name: 'MinijuegosView',
   components: {
     NavComponente,
+    footerComponente
   }
 }
 </script>

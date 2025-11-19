@@ -1,36 +1,27 @@
 <template>
   <div class="game-container">
     <h1>Recicla Rápido</h1>
-    <p>Recicla ¿Y esto dónde va?</p>
+    <p class="nombre-game">¿Y esto a dónde va?</p>
 
-    <!-- Modal de Información al inicio -->
-    <div v-if="mostrarModalInfo" class="modal-overlay" @click.self="cerrarModal">
-      <div class="modal-content">
-        <button class="modal-cerrar" @click="cerrarModal">×</button>
-        <h2>Guía de Reciclaje</h2>
+    <!-- Pantalla inicial -->
+    <div v-if="!juegoActivo" class="initial-screen">
+      <div class="welcome-section">
+
         
-      <div class="info-section">
-        <h3>Colores de los Contenedores</h3>
-        <div class="color-guide">
-          <div v-for="bote in botes" :key="bote.type" class="color-item">
-            <img :src="bote.imagen" :alt="bote.nombre" class="color-sample">
-            <div class="color-info">
-              <strong>{{ bote.nombre }}</strong>
-              <p>{{ bote.descripcion }}</p>
-              <small><strong>Ejemplos:</strong> {{ bote.ejemplos }}</small>
-            </div>
-          </div>
+        <div class="initial-actions">
+          <button class="btn-start-main" @click="mostrarModalInfo = true">
+            Comenzar Juego
+          </button>
         </div>
       </div>
-
-        <button class="start-game-btn" @click="empezarJuego">
-          Empezar a Jugar
-        </button>
+              <!-- Tabla de líderes -->
+      <div class="leaderboard-section-initial">
+        <LeaderboardGame1 :scores="leaderboard" :showAciertos="true"></LeaderboardGame1>
       </div>
     </div>
 
     <!-- Juego principal -->
-    <div v-else-if="!juegoTerminado && !juegoCompletado">
+    <div v-else-if="!juegoTerminado && !juegoCompletado" class="game-main">
       <div class="game-stats">
         <div class="stat">
           <span>Aciertos: {{ aciertos }}/{{ basuraItems.length }}</span>
@@ -74,10 +65,37 @@
       </div>
     </div>
 
-    <!-- modal de juego Terminado (por agotar intentos) -->
-    <div v-if="juegoTerminado" class="modal-overlay" @click.self="cerrarModal">
+    <!-- Modal de Guía -->
+    <div v-if="mostrarModalInfo" class="modal-overlay">
       <div class="modal-content">
-        <button class="modal-cerrar" @click="cerrarModal">×</button>
+        <h2>Guía de Reciclaje</h2>
+        <p class="guide-subtitle">Es importante aprender antes de jugar</p>
+        
+        <div class="info-section">
+          <h3>Colores de los Contenedores</h3>
+          <div class="color-guide">
+            <div v-for="bote in botes" :key="bote.type" class="color-item">
+              <img :src="bote.imagen" :alt="bote.nombre" class="color-sample">
+              <div class="color-info">
+                <strong>{{ bote.nombre }}</strong>
+                <p>{{ bote.descripcion }}</p>
+                <small><strong>Ejemplos:</strong> {{ bote.ejemplos }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="start-game-btn" @click="empezarJuego">
+            ¡Entendido, Empezar a Jugar!
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de juego Terminado (por agotar intentos) -->
+    <div v-if="juegoTerminado" class="modal-overlay">
+      <div class="modal-content">
         <h2>¡Se agotaron los intentos!</h2>
         
         <div class="result-stats">
@@ -89,9 +107,6 @@
           </div>
           <div class="result-stat">
             <span>Eficiencia: {{ eficiencia }}%</span>
-          </div>
-          <div class="result-stat">
-            <span>Intentos usados: {{ 3 - intentosRestantes }}/3</span>
           </div>
         </div>
 
@@ -105,29 +120,22 @@
           <button class="btn-save" @click="guardarPuntuacion" :disabled="puntuacionGuardada || !usuarioLogueado">
             {{ !usuarioLogueado ? 'Inicia sesión para guardar' : puntuacionGuardada ? 'Puntuación Guardada' : 'Guardar Puntuación' }}
           </button>
-
         </div>
-        <!--componente de los lideres del juego-->
-        <LeaderboardGame1 :scores="leaderboard" :showAciertos="true"></LeaderboardGame1>
         
         <div class="modal-actions">
-          <button class="btn-primary" @click="reiniciarJuego">
-            Jugar Otra Vez
+          <button class="btn-primary" @click="volverAlInicio">
+            Volver al Inicio
           </button>
-          <button class="btn-warning" @click="verGuia">
-            Ver Guía
-          </button>
-          <button class="btn-secondary" @click="continuarIntentando" v-if="!puntuacionGuardada">
-            Continuar Sin Guardar
+          <button class="btn-warning" @click="reintentarJuego">
+            Reintentar
           </button>
         </div>
       </div>
     </div>
 
     <!-- Modal de Juego Completado (todos los residuos reciclados) -->
-    <div v-if="juegoCompletado && !juegoTerminado" class="modal-overlay" @click.self="cerrarModal">
+    <div v-if="juegoCompletado && !juegoTerminado" class="modal-overlay">
       <div class="modal-content">
-        <button class="modal-cerrar" @click="cerrarModal">×</button>
         <h2>¡Juego Completado!</h2>
         
         <div class="result-stats">
@@ -139,9 +147,6 @@
           </div>
           <div class="result-stat">
             <span>Eficiencia: {{ eficiencia }}%</span>
-          </div>
-          <div class="result-stat">
-            <span>Intentos usados: {{ 3 - intentosRestantes }}/3</span>
           </div>
         </div>
 
@@ -159,23 +164,19 @@
             Debes iniciar sesión para guardar tu puntuación
           </p>
         </div>
-
-        <LeaderboardGame1 :scores="leaderboard" :showAciertos="true"></LeaderboardGame1>
         
         <div class="modal-actions">
-          <button class="btn-primary" @click="reiniciarJuego">
+          <button class="btn-primary" @click="volverAlInicio">
+            Volver al Inicio
+          </button>
+          <button class="btn-warning" @click="reintentarJuego">
             Jugar Otra Vez
-          </button>
-          <button class="btn-warning" @click="verGuia">
-            Ver Guía
-          </button>
-          <button class="btn-secondary" @click="continuarSinGuardar" v-if="!puntuacionGuardada">
-            Continuar Sin Guardar
           </button>
         </div>
       </div>
     </div>
   </div>
+
 </template>
 
 <script>
@@ -203,9 +204,10 @@ export default {
   },
   data() {
     return {
+      juegoActivo: false, 
       currentIndex: 0,
       mensaje: '',
-      mostrarModalInfo: true,
+      mostrarModalInfo: false, 
       juegoCompletado: false,
       juegoTerminado: false,
       puntuacionGuardada: false,
@@ -314,21 +316,26 @@ export default {
       }
     },
     
-    cerrarModal() {
-      if (this.mostrarModalInfo) {
-        this.mostrarModalInfo = false;
-        this.empezarJuego();
-      } else if (this.juegoTerminado || this.juegoCompletado) {
-        this.juegoTerminado = false;
-        this.juegoCompletado = false;
-      }
-    },    
+    //  Vuolve a la pantalla inicial
+    volverAlInicio() {
+      this.juegoActivo = false;
+      this.juegoTerminado = false;
+      this.juegoCompletado = false;
+      this.detenerTemporizador();
+      this.cargarLeaderboard(); // Recarga leaderboard
+    },
+
+    //  Reintenta juego
+    reintentarJuego() {
+      this.reiniciarJuego();
+      this.mostrarModalInfo = true; // Muestra guua 
+    },
 
     empezarJuego() {
       this.verificarAutenticacion();
       this.mostrarModalInfo = false;
+      this.juegoActivo = true;
       this.iniciarTemporizador();
-      this.cargarLeaderboard();
     },
 
     iniciarTemporizador() {
@@ -384,7 +391,6 @@ export default {
         this.detenerTemporizador();
         this.juegoCompletado = true;
         this.puntuacionGuardada = false;
-        this.cargarLeaderboard();
       }
     },
 
@@ -392,18 +398,6 @@ export default {
       this.detenerTemporizador();
       this.juegoTerminado = true;
       this.puntuacionGuardada = false;
-      this.cargarLeaderboard();
-    },
-
-    continuarIntentando() {
-      this.juegoTerminado = false;
-      this.intentosRestantes = 3;
-      this.iniciarTemporizador();
-    },
-
-    continuarSinGuardar() {
-      this.juegoCompletado = false;
-      this.juegoTerminado = false;
     },
 
     reiniciarJuego() {
@@ -418,25 +412,7 @@ export default {
       this.feedback.incorrecto = false;
       this.basuraItems = [...this.basuraItems].sort(() => Math.random() - 0.5);
       this.detenerTemporizador();
-      this.iniciarTemporizador();
     },
-
-    verGuia() {
-      this.currentIndex = 0;
-      this.aciertos = 0;
-      this.intentosRestantes = 3;
-      this.tiempoTranscurrido = 0;
-      this.mensaje = "";
-      this.feedback.correcto = false;
-      this.feedback.incorrecto = false;
-      this.puntuacionGuardada = false;
-      this.basuraItems = [...this.basuraItems].sort(() => Math.random() - 0.5);
-      this.juegoTerminado = false;
-      this.juegoCompletado = false;
-      this.mostrarModalInfo = true;
-      this.detenerTemporizador();
-    }, 
-   
 
     async guardarPuntuacion() {
       if (!this.usuarioLogueado) {
@@ -465,16 +441,6 @@ export default {
         if (response.data.success) {
           this.puntuacionGuardada = true;
           this.cargarLeaderboard();
-          
-          if (response.data.action === 'updated') {
-            this.mensaje = '¡Puntuación actualizada correctamente!';
-          } else {
-            this.mensaje = '¡Puntuación guardada correctamente!';
-          }
-          
-          setTimeout(() => {
-            this.mensaje = '';
-          }, 3000);
         }
       } catch (error) {
         console.error('Error guardando puntuación:', error);
@@ -494,6 +460,7 @@ export default {
   mounted() {
     this.verificarAutenticacion();
     this.basuraItems = [...this.basuraItems].sort(() => Math.random() - 0.5);
+    this.cargarLeaderboard(); // Cargar leaderboard al inicio
   }
 }
 </script>
@@ -506,14 +473,66 @@ export default {
   background: white;
   border-radius: 15px;
   box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  font-family: 'Poppins', sans-serif;
   text-align: center;
 }
 
 h1 {
   color: #2E7D32;
   margin-bottom: 10px;
-  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-size: 45px;
+  font-family: 'Poppins', sans-serif;
 }
+.nombre-game{
+  font-size: 28px;
+  
+}
+
+
+
+.initial-screen {
+  padding: 20px 0;
+}
+
+.welcome-section {
+  margin-bottom: 30px;
+}
+
+.welcome-section h2 {
+  color: #2E7D32;
+  margin-bottom: 10px;
+}
+
+.welcome-section p {
+  color: #666;
+  margin-bottom: 25px;
+  font-size: 1.1rem;
+}
+
+.initial-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 25px 0;
+}
+
+.btn-start-main {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: background-color 0.3s;
+}
+
+.btn-start-main:hover {
+  background: #45a049;
+}
+
+
 
 /* Game Stats Responsive */
 .game-stats {
@@ -655,27 +674,22 @@ h1 {
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 }
 
-.modal-cerrar {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #7f8c8d;
+.guide-subtitle {
+  color: #666;
+  text-align: center;
+  margin-bottom: 20px;
+  font-style: italic;
 }
 
 /* Info Section Responsive */
 .info-section h3 {
   margin: 15px 0;
   text-align: center;
-
 }
-.info-section  {
+
+.info-section {
   margin: 15px 0;
   text-align: left;
-
 }
 
 .color-guide {
@@ -806,47 +820,34 @@ h1 {
   margin-top: 5px;
 }
 
-
-
-/* Tablets */
-@media (max-width: 1024px) {
-  .botes {
-    grid-template-columns: repeat(3, 1fr);
+/* Responsive Design */
+@media (max-width: 768px) {
+  .initial-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn-start-main {
+    width: 100%;
+    max-width: 250px;
   }
   
   .color-guide {
     grid-template-columns: repeat(2, 1fr);
   }
+  
+  .botes {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
-/* Mobile Large */
-@media (max-width: 768px) {
-  .game-container {
-    margin: 80px auto 15px;
-    padding: 12px;
+@media (max-width: 480px) {
+  .color-guide {
+    grid-template-columns: 1fr;
   }
   
   .botes {
     grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-  }
-  
-  .bote {
-    padding: 8px;
-  }
-  
-  .bote img {
-    max-width: 40px;
-  }
-  
-  .game-stats {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .stat {
-    width: 100%;
-    max-width: 250px;
   }
   
   .modal-actions {
@@ -857,133 +858,6 @@ h1 {
   .modal-actions button {
     width: 100%;
     max-width: 250px;
-  }
-  
-  .color-item {
-    flex-direction: row;
-    align-items: center;
-  }
-  
-  .basura-item {
-    width: 60px;
-    height: 60px;
-  }
-}
-
-/* Mobile Small */
-@media (max-width: 480px) {
-  .game-container {
-    margin: 70px auto 10px;
-    padding: 10px;
-    border-radius: 10px;
-  }
-  
-  .botes {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .color-guide {
-    grid-template-columns: 1fr;
-  }
-  
-  .modal-content {
-    padding: 1rem;
-  }
-  
-  .color-item {
-    flex-direction: row;
-    align-items: center;
-  }
-  
-  .color-sample {
-    width: 35px;
-    height: 35px;
-  }
-  
-  .color-info strong {
-    font-size: 0.85rem;
-  }
-  
-  .color-info p,
-  .color-info small {
-    font-size: 0.75rem;
-  }
-  
-  .basura-item {
-    width: 50px;
-    height: 50px;
-  }
-  
-  .message-area {
-    height: 35px;
-  }
-  
-  .message-area p {
-    font-size: 0.8rem;
-    padding: 6px 12px;
-  }
-}
-
-/* Very Small Screens */
-@media (max-width: 360px) {
-  .botes {
-    grid-template-columns: 1fr;
-  }
-  
-  .game-stats {
-    gap: 5px;
-  }
-  
-  .stat {
-    padding: 6px 10px;
-    font-size: 0.8rem;
-  }
-  
-  .modal-actions button {
-    padding: 8px 16px;
-    font-size: 0.85rem;
-  }
-}
-
-/* Landscape Mode for Mobile */
-@media (max-height: 600px) and (orientation: landscape) {
-  .game-container {
-    margin: 60px auto 10px;
-  }
-  
-  .botes {
-    grid-template-columns: repeat(6, 1fr);
-    gap: 5px;
-  }
-  
-  .bote img {
-    max-width: 35px;
-  }
-  
-  .basura-item {
-    width: 50px;
-    height: 50px;
-  }
-  
-  .modal-content {
-    max-height: 85vh;
-    padding: 1rem;
-  }
-}
-
-/* High Resolution Screens */
-@media (min-width: 1400px) {
-  .game-container {
-    max-width: 1200px;
-  }
-  
-  .bote img {
-    max-width: 70px;
-  }
-  
-  .basura-item {
-    width: 80px;
-    height: 80px;
   }
 }
 </style>

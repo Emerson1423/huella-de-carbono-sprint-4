@@ -111,14 +111,15 @@ const routes = [
     path: '/entretenimiento',
     name: 'entretenimiento',
     component: () => import('../views/EntretenimientoView.vue'),
-     meta: { requiresAuth: true }
+      meta: { requiresAuth: true }
+    
 
   }, 
        {
     path: '/recicla',
     name: 'recicla',
     component: () => import('../views/juego1View.vue'),
-     meta: { requiresAuth: true }
+       meta: { requiresAuth: true }
 
   },  
 
