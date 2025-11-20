@@ -1,24 +1,24 @@
 <template>
   <div class="leaderboard-section" v-if="scores.length > 0">
-    <h3>Mejores Puntuaciones</h3>
+    <h3>Mejores Puntuaciones - Mi Planta Virtual</h3>
     <div class="table-container">
       <table class="leaderboard-table">
         <thead>
           <tr>
             <th class="col-rank-enc">Posición</th>
             <th class="col-name-enc">Jugador</th>
-            <th class="col-aciertos-enc" v-if="showAciertos">Aciertos</th>
-            <th class="col-score-enc">Efectividad</th>
-            <th class="col-time-enc">Tiempo</th>
+            <th class="col-aciertos-enc">Aciertos</th>
+            <th class="col-etapa-enc">Etapa</th>
+            <th class="col-growth-enc">Crecimiento</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(score, index) in scores" :key="score.id || index" class="leaderboard-row">
             <td class="col-rank">#{{ index + 1 }}</td>
             <td class="col-name">{{ score.usuario }}</td>
-            <td class="col-aciertos" v-if="showAciertos">{{ score.aciertos }}/{{ score.total_residuos }}</td>
-            <td class="col-score">{{ score.puntuacion }}%</td>
-            <td class="col-time">{{ formatoTiempo(score.tiempo_segundos) }}</td>
+            <td class="col-aciertos">{{ score.aciertos }}/{{ score.total_preguntas }}</td>
+            <td class="col-etapa">{{ score.etapa_alcanzada }}</td>
+            <td class="col-growth">{{ score.crecimiento_final }}%</td>
           </tr>
         </tbody>
       </table>
@@ -28,23 +28,12 @@
 
 <script>
 export default {
-  name: "LeaderboardGame1",
+  name: "LeaderboardGame2",
   props: {
     scores: {
       type: Array,
       required: true,
       default: () => []
-    },
-    showAciertos: {
-      type: Boolean,
-      default: false
-    }
-  },
-  methods: {
-    formatoTiempo(segundos) {
-      const minutos = Math.floor(segundos / 60);
-      const segs = segundos % 60;
-      return `${minutos}:${segs.toString().padStart(2, '0')}`;
     }
   }
 }
@@ -70,6 +59,7 @@ export default {
   overflow-y: auto;
   border-radius: 8px;
   padding: 10px;
+  
 }
 
 .leaderboard-table {
@@ -78,8 +68,9 @@ export default {
   background: white;
   border-radius: 6px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  
 }
+
 
 .leaderboard-table thead {
   background: #2E7D32;
@@ -93,6 +84,7 @@ export default {
   font-size: 0.9rem;
   border-bottom: 2px solid #1B5E20;
 }
+
 
 .leaderboard-table tbody tr {
   transition: background-color 0.2s;
@@ -116,6 +108,7 @@ export default {
   border-bottom: 1px solid #e0e0e0;
 }
 
+/* Estilos específicos por columna */
 .col-rank {
   font-weight: bold;
   color: #2E7D32;
@@ -130,32 +123,28 @@ export default {
 }
 
 .col-aciertos {
-  color: #666;
-  font-weight: 500;
-  width: 80px;
-  font-size: 0.9rem;
-}
-
-.col-score {
+  color: #2196F3;
   font-weight: bold;
+  width: 80px;
+}
+
+
+.col-etapa {
   color: #FF9800;
+  font-weight: bold;
+  width: 130px;
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.col-growth {
+  color: #4CAF50;
+  font-weight: bold;
   width: 70px;
 }
 
-.col-time {
-  color: #666;
-  font-weight: 500;
-  width: 70px;
-  font-size: 0.9rem;
-}
-
-
+/* Versión móvil */
 @media (max-width: 768px) {
-  .leaderboard-section {
-    max-width: 450px;
-    width: 95%;
-  }
-  
   .table-container {
     max-height: 350px;
   }
@@ -171,29 +160,23 @@ export default {
   
   .col-name {
     padding-left: 8px;
-    max-width: 100px;
+    max-width: 80px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
   
+  .col-etapa {
+    width: 100px;
+    font-size: 0.8rem;
+  }
+  
   .col-aciertos {
     width: 70px;
-    font-size: 0.8rem;
   }
   
-  .col-score {
+  .col-growth {
     width: 60px;
-    font-size: 0.85rem;
-  }
-  
-  .col-time {
-    width: 60px;
-    font-size: 0.8rem;
-  }
-  
-  .col-rank {
-    width: 40px;
   }
 }
 
@@ -217,28 +200,13 @@ export default {
     padding: 6px 3px;
   }
   
+  .col-etapa {
+    width: 90px;
+    font-size: 0.75rem;
+  }
+  
   .col-name {
-    max-width: 80px;
-    padding-left: 5px;
-  }
-  
-  .col-aciertos {
-    width: 60px;
-    font-size: 0.75rem;
-  }
-  
-  .col-score {
-    width: 50px;
-    font-size: 0.8rem;
-  }
-  
-  .col-time {
-    width: 50px;
-    font-size: 0.75rem;
-  }
-  
-  .col-rank {
-    width: 35px;
+    max-width: 60px;
   }
 }
 

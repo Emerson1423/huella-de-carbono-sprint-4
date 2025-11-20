@@ -6,15 +6,13 @@
     <!-- Pantalla inicial -->
     <div v-if="!juegoActivo" class="initial-screen">
       <div class="welcome-section">
-
-        
         <div class="initial-actions">
           <button class="btn-start-main" @click="mostrarModalInfo = true">
             Comenzar Juego
           </button>
         </div>
       </div>
-              <!-- Tabla de líderes -->
+      <!-- Tabla de líderes -->
       <div class="leaderboard-section-initial">
         <LeaderboardGame1 :scores="leaderboard" :showAciertos="true"></LeaderboardGame1>
       </div>
@@ -68,6 +66,7 @@
     <!-- Modal de Guía -->
     <div v-if="mostrarModalInfo" class="modal-overlay">
       <div class="modal-content">
+        <button class="modal-close-btn" @click="mostrarModalInfo = false">×</button>
         <h2>Guía de Reciclaje</h2>
         <p class="guide-subtitle">Es importante aprender antes de jugar</p>
         
@@ -129,6 +128,9 @@
           <button class="btn-warning" @click="reintentarJuego">
             Reintentar
           </button>
+          <button class="btn-info" @click="mostrarLeaderboard = true">
+            Ver posiciones
+          </button>
         </div>
       </div>
     </div>
@@ -172,11 +174,29 @@
           <button class="btn-warning" @click="reintentarJuego">
             Jugar Otra Vez
           </button>
+          <button class="btn-info" @click="mostrarLeaderboard = true">
+            Ver posiciones
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal del Leaderboard -->
+    <div v-if="mostrarLeaderboard" class="modal-overlay">
+      <div class="modal-content leaderboard-modal">
+        <button class="modal-close-btn" @click="mostrarLeaderboard = false">×</button>
+        <h2>Tabla de Posiciones</h2>
+        <div class="leaderboard-container">
+          <LeaderboardGame1 :scores="leaderboard" :showAciertos="true" />
+        </div>
+        <div class="modal-actions">
+          <button class="btn-primary" @click="mostrarLeaderboard = false">
+            Cerrar
+          </button>
         </div>
       </div>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -208,6 +228,7 @@ export default {
       currentIndex: 0,
       mensaje: '',
       mostrarModalInfo: false, 
+      mostrarLeaderboard: false, 
       juegoCompletado: false,
       juegoTerminado: false,
       puntuacionGuardada: false,
@@ -316,19 +337,20 @@ export default {
       }
     },
     
-    //  Vuolve a la pantalla inicial
+    // Vuelve a la pantalla inicial
     volverAlInicio() {
       this.juegoActivo = false;
       this.juegoTerminado = false;
       this.juegoCompletado = false;
+      this.mostrarLeaderboard = false;
       this.detenerTemporizador();
-      this.cargarLeaderboard(); // Recarga leaderboard
+      this.cargarLeaderboard();
     },
 
-    //  Reintenta juego
+    // Reintenta juego
     reintentarJuego() {
       this.reiniciarJuego();
-      this.mostrarModalInfo = true; // Muestra guua 
+      this.mostrarModalInfo = true;
     },
 
     empezarJuego() {
@@ -460,12 +482,47 @@ export default {
   mounted() {
     this.verificarAutenticacion();
     this.basuraItems = [...this.basuraItems].sort(() => Math.random() - 0.5);
-    this.cargarLeaderboard(); // Cargar leaderboard al inicio
+    this.cargarLeaderboard();
   }
 }
 </script>
 
 <style scoped>
+
+.modal-close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #7f8c8d;
+  transition: color 0.2s;
+}
+.modal-close-btn:hover{
+  color: #e74c3c;
+
+}
+.leaderboard-modal {
+  max-width: 600px;
+}
+
+.leaderboard-container {
+  margin: 20px 0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.modal-content {
+  position: relative;
+  padding: 2rem;
+}
+
+.modal-content h2 {
+  padding-right: 40px; 
+}
+
 .game-container {
   max-width: 95%;
   margin: 100px auto 20px;
@@ -487,8 +544,6 @@ h1 {
   font-size: 28px;
   
 }
-
-
 
 .initial-screen {
   padding: 20px 0;
@@ -531,8 +586,6 @@ h1 {
 .btn-start-main:hover {
   background: #45a049;
 }
-
-
 
 /* Game Stats Responsive */
 .game-stats {
@@ -618,7 +671,6 @@ h1 {
   object-fit: contain;
 }
 
-/* Message Area */
 .message-area {
   margin: 10px 0;
   height: 40px;
@@ -647,7 +699,7 @@ h1 {
   color: white;
 }
 
-/* Modal Improvements */
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -730,7 +782,7 @@ h1 {
 }
 
 /* Buttons */
-.btn-warning, .btn-secondary, .btn-primary, .start-game-btn {
+.btn-warning, .btn-secondary, .btn-primary, .btn-info,.start-game-btn {
   padding: 10px 20px;
   border-radius: 20px;
   cursor: pointer;
@@ -784,7 +836,7 @@ h1 {
   flex-wrap: wrap;
 }
 
-/* Resultados Stats */
+
 .result-stats {
   display: flex;
   flex-direction: column;

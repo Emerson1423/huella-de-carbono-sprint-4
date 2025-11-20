@@ -122,6 +122,13 @@ const routes = [
        meta: { requiresAuth: true }
 
   },  
+        {
+    path: '/planta',
+    name: 'planta',
+    component: () => import('../views/juego2View.vue'),
+       meta: { requiresAuth: true }
+
+  },   
 
 
 ];

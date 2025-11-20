@@ -351,9 +351,12 @@ export default {
 }
 
 .eventos-header h1 {
-  font-size: 2.5rem;
-  color: #2e7d32;
-  margin: 0;
+  font-size: 2.3rem;
+  font-weight: bold;
+  color: #0b6d11;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .banner-principal {

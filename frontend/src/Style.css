@@ -70,10 +70,3 @@
 .link-btn.red { background: #f52222; }
 .link-btn.red:hover { background: #a40303; }
 
-/*Titulos y textos*/
-.content {
-  font-family: 'Poppins', sans-serif;
-  color: var(--dark, #333);
-  margin-bottom: 5px;
-  font-size: 1rem;
-}

@@ -1,10 +1,7 @@
 <template>
   <div class="contenido-habitos">
 
-    <h1>
-      Hábitos Ecológicos
-    </h1>
-    <img v-if="!mostrarDetalle" src="@/assets/img/Img-Hab.jpg" alt="Hábitos Ecológicos" class="img-hab" />
+    <img v-if="!mostrarDetalle" src="@/assets/img/Img-Hab.png" alt="Hábitos Ecológicos" class="img-hab" />
     <img v-else :src="cards[habitoActual].img" :alt="cards[habitoActual].title" class="img-hab" />
 
 
@@ -619,13 +616,20 @@ console.log('Todas las claves de hábitos:', Object.keys(localStorage).filter(k 
 </script>
 
 <style>
-/* Título principal */
-.title-habito  {
-  font-size: 4rem;
-  text-align: center; 
-  margin: 2rem 0 1.5rem 0;
-  color: #ffffff;
-  letter-spacing: 0.5px;
+.titulo-principal{
+  text-align: center;
+  margin-bottom: 30px;
+}
+.titulo-principal h1{
+  
+  margin-top: 5%;
+  font-size: 2.3rem;
+  font-weight: bold;
+  color: #0b6d11;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  
 }
 .contenido-habitos{
   margin-top: 100px;
@@ -641,8 +645,7 @@ console.log('Todas las claves de hábitos:', Object.keys(localStorage).filter(k 
   object-fit: cover;
   height: 400px;
   border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
+  
 }
 
 /* Grid de tarjetas */
@@ -750,11 +753,7 @@ console.log('Todas las claves de hábitos:', Object.keys(localStorage).filter(k 
   padding: 0 1rem;
 }
 
-/* Efecto hover opcional para la imagen */
-.img-hab:hover {
-  transform: scale(1.02);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
-}
+
 
 @media (max-width: 768px) {
   .img-hab {
