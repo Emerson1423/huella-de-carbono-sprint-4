@@ -37,9 +37,11 @@ app.use('/api', googleOAuthRoutes);
 app.use('/api', updatePerfilRoutes);
 app.use('/api', estadisticasHuellaRoutes);
 app.use('/api/juego1', juego1Routes);
+app.use('/api/juego2', juego2Routes);
 app.use('/api/dashboard', dashboardRoutes); // NUEVO
 app.use('/api/soporte', soporteRoutes);
 app.use('/api/admin/roles', rolesAdminRoutes);
+
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
