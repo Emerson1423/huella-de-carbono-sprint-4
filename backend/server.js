@@ -21,6 +21,7 @@ const googleOAuthRoutes = require('./routes/googleOauth');
 const updatePerfilRoutes = require('./routes/updatePerfil');
 const estadisticasHuellaRoutes = require('./routes/estadisticasHuella');
 const juego1Routes = require('./routes/juego1');
+const juego2Routes = require('./routes/juego2');
 const dashboardRoutes = require('./routes/dashboard'); // NUEVO
 const soporteRoutes = require('./routes/soporte');
 const rolesAdminRoutes = require('./routes/rolesAdmin');
