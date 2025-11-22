@@ -14,28 +14,79 @@ router.post('/registro', async (req, res) => {
     if (existingUser.length > 0) return res.status(400).json({ error: 'El usuario o correo ya existe' });
 
     const hashedPassword = await bcrypt.hash(contraseña, 10);
-    await pool.query('INSERT INTO usuarios (usuario, correo, contraseña) VALUES (?, ?, ?)', [usuario, correo, hashedPassword]);
+    
+    const [rolUsuario] = await pool.query('SELECT id FROM roles WHERE nombre = ?', ['usuario']);
+    const rolId = rolUsuario[0]?.id || 2;
+    
+    await pool.query(
+      'INSERT INTO usuarios (usuario, correo, contraseña, rol_id) VALUES (?, ?, ?, ?)', 
+      [usuario, correo, hashedPassword, rolId]
+    );
 
     res.status(201).json({ message: 'Usuario registrado exitosamente' });
   } catch (error) {
+    console.error('Error en registro:', error);
     res.status(500).json({ error: 'Error en el servidor' });
   }
 });
 
 router.post('/login', async (req, res) => {
   const { usuario, contraseña } = req.body;
+  
+  console.log('🔍 Intentando login:', usuario);
+  
   try {
-    const [users] = await pool.query('SELECT * FROM usuarios WHERE usuario = ?', [usuario]);
-    if (users.length === 0) return res.status(401).json({ error: 'Credenciales inválidas' });
+    const [users] = await pool.query(
+      `SELECT u.*, r.nombre as rol_nombre 
+       FROM usuarios u 
+       LEFT JOIN roles r ON u.rol_id = r.id 
+       WHERE u.usuario = ?`, 
+      [usuario]
+    );
+    
+    if (users.length === 0) {
+      console.log('❌ Usuario no encontrado:', usuario);
+      return res.status(401).json({ error: 'Credenciales inválidas' });
+    }
 
     const user = users[0];
-    const validPassword = await bcrypt.compare(contraseña, user.contraseña);
-    if (!validPassword) return res.status(401).json({ error: 'Credenciales inválidas' });
+    console.log('✅ Usuario encontrado:', user.usuario, '- Rol:', user.rol_nombre);
 
-    const token = jwt.sign({ id: user.id, usuario: user.usuario, correo: user.correo }, JWT_SECRET, { expiresIn: '1h' });
-    res.json({ token, user: { id: user.id, usuario: user.usuario, correo: user.correo } });
+    const validPassword = await bcrypt.compare(contraseña, user.contraseña);
+    if (!validPassword) {
+      console.log('❌ Contraseña incorrecta para:', usuario);
+      return res.status(401).json({ error: 'Credenciales inválidas' });
+    }
+
+    console.log('✅ Contraseña correcta');
+
+    const token = jwt.sign(
+      { 
+        id: user.id, 
+        usuario: user.usuario, 
+        correo: user.correo,
+        rol: user.rol_nombre || 'usuario',
+        rol_id: user.rol_id
+      }, 
+      JWT_SECRET, 
+      { expiresIn: '4h' }
+    );
+    
+    console.log('🎫 Token generado para:', user.usuario);
+    
+    return res.status(200).json({ 
+      token, 
+      usuario: {
+        id: user.id, 
+        usuario: user.usuario, 
+        correo: user.correo,
+        rol: user.rol_nombre || 'usuario'
+      } 
+    });
+    
   } catch (error) {
-    res.status(500).json({ error: 'Error en el servidor' });
+    console.error('💥 Error en login:', error);
+    return res.status(500).json({ error: 'Error en el servidor' });
   }
 });
 
@@ -49,7 +100,6 @@ router.post('/completar-registro-google', async (req, res) => {
       return res.status(400).json({ error: 'Token ya utilizado' });
     }
 
-    // Verificar que no exista por usuario O correo
     const [existingUser] = await pool.query(
       'SELECT * FROM usuarios WHERE usuario = ? OR correo = ?', 
       [usuario, decoded.email]
@@ -59,28 +109,38 @@ router.post('/completar-registro-google', async (req, res) => {
       return res.status(400).json({ error: 'El usuario o correo ya existe' });
     }
 
-    // Crear usuario SIN google_id
     const hashedPassword = await bcrypt.hash(contraseña, 10);
+    
+    const [rolUsuario] = await pool.query('SELECT id FROM roles WHERE nombre = ?', ['usuario']);
+    const rolId = rolUsuario[0]?.id || 2;
+    
     const [result] = await pool.query(
-      'INSERT INTO usuarios (usuario, correo, contraseña) VALUES (?, ?, ?)', 
-      [usuario, decoded.email, hashedPassword]
+      'INSERT INTO usuarios (usuario, correo, contraseña, rol_id) VALUES (?, ?, ?, ?)', 
+      [usuario, decoded.email, hashedPassword, rolId]
     );
 
-    // Token final
     const token = jwt.sign(
       { 
         id: result.insertId, 
         usuario: usuario, 
-        correo: decoded.email 
+        correo: decoded.email,
+        rol: 'usuario',
+        rol_id: rolId
       }, 
       JWT_SECRET, 
-      { expiresIn: '1h' }
+      { expiresIn: '4h' }
     );
 
+    // ✅ También cambiado aquí
     res.status(201).json({ 
       message: 'Registro completado exitosamente',
       token,
-      user: { id: result.insertId, usuario, correo: decoded.email }
+      usuario: {  // ⭐ Cambiado de "user" a "usuario"
+        id: result.insertId, 
+        usuario, 
+        correo: decoded.email,
+        rol: 'usuario'
+      }
     });
 
   } catch (error) {
@@ -96,12 +156,14 @@ router.post('/logout', authenticateToken, (req, res) => {
 router.get('/verificar-token', authenticateToken, (req, res) => {
   res.json({ 
     valido: true, 
-    user: {
+    usuario: {  // ✅ Cambiado de "user" a "usuario"
       id: req.user.id,
       usuario: req.user.usuario,
-      correo: req.user.correo
+      correo: req.user.correo,
+      rol: req.user.rol || 'usuario'
     }
   });
 });
 
 module.exports = router;
+

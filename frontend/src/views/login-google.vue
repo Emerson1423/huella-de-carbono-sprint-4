@@ -20,35 +20,52 @@ export default {
   },
   methods: {
     manejarCallback() {
-      // Obtener parámetros de la URL
       const urlParams = new URLSearchParams(window.location.search);
       const token = urlParams.get('token');
       const tempToken = urlParams.get('temp_token');
+      
+      console.log('🔍 LoginGoogle - Token recibido:', token ? 'Sí' : 'No');
+      console.log('🔍 LoginGoogle - TempToken recibido:', tempToken ? 'Sí' : 'No');
       
       if (token) {
         // Login exitoso - usuario ya existía
         this.mensaje = 'Iniciando sesión...';
         localStorage.setItem('token', token);
         
-        // Opcional: obtener datos del usuario del token
         try {
+          // Decodificar el payload del JWT
           const payload = JSON.parse(atob(token.split('.')[1]));
-          localStorage.setItem('user', JSON.stringify({
+          
+          console.log('📦 Payload decodificado:', payload);
+          
+  
+          const usuarioData = {
             id: payload.id,
             usuario: payload.usuario,
-            correo: payload.correo
-          }));
+            correo: payload.correo,
+            rol: payload.rol || 'usuario'
+          };
+          
+          localStorage.setItem('usuario', JSON.stringify(usuarioData));
+          
+        
+
+          window.dispatchEvent(new Event('authStateChanged'));
+          
         } catch (err) {
-          console.warn('No se pudo decodificar el token:', err);
+          console.error('❌ Error al decodificar token:', err);
         }
         
         setTimeout(() => {
+          console.log('🏠 Redirigiendo a /huella');
           this.$router.push('/huella');
         }, 1000);
         
       } else if (tempToken) {
         // Necesita completar registro - usuario nuevo
         this.mensaje = 'Redirigiendo para completar registro...';
+        console.log('📝 Usuario nuevo, redirigiendo a completar registro');
+        
         setTimeout(() => {
           this.$router.push(`/completar-registro-google?temp_token=${tempToken}`);
         }, 1000);
@@ -56,7 +73,8 @@ export default {
       } else {
         // Error - no se recibió ningún token
         this.mensaje = 'Error en la autenticación';
-        console.error('No se recibió token de Google');
+        console.error('❌ No se recibió token de Google');
+        
         setTimeout(() => {
           this.$router.push('/login?error=google_auth_failed');
         }, 2000);

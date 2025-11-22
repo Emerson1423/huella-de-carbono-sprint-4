@@ -56,7 +56,18 @@
               </li>
             </ul>
           </li>
-      
+
+          <li v-if="isAuthenticated" class="nav-item">
+            <router-link to="/soporte" class="nav-link faq-link" @click="closeMenu">
+              <i class="fas fa-question-circle"></i> FAQ
+            </router-link>
+          </li>
+
+          <li v-if="isAuthenticated && isAdminOrMod" class="nav-item">
+            <router-link to="/dashboard" class="nav-link dashboard-link" @click="closeMenu">
+              <i class="fas fa-tachometer-alt"></i> Dashboard
+            </router-link>
+          </li>
 
           <!-- Mostrar solo cuando NO está autenticado -->
           <template v-if="!isAuthenticated">
@@ -72,7 +83,6 @@
           <template v-if="isAuthenticated">
             <li class="nav-item dropdown" @click.stop="toggleDropdown('usuario')">
               <a href="#" class="nav-link-user-container" @click.prevent>
-               
                 <img :src="userAvatar" alt="Avatar" class="avatar-img" />
               </a>
               <ul class="dropdown-menu" :class="{ 'active': activeDropdown === 'usuario' }">
@@ -122,20 +132,23 @@ export default {
       showLogoutModal: false,
       isAuthenticated: false,
       userName: '',
+      userRole: '',
       userAvatar: require('@/assets/perfil/reemplazarP.png')
     }
   },
   
+  computed: {
+    isAdminOrMod() {
+      return this.userRole === 'admin' || this.userRole === 'moderador';
+    }
+  },
+  
   mounted() {
-    // Verificar estado inicial
+    console.log('🔄 NavBar montado, verificando autenticación...');
     this.checkAuthStatus();
     
-    // Escuchar cambios en el localStorage (en otra pestaña)
     window.addEventListener('storage', this.checkAuthStatus);
-    
-    // Escuchar evento personalizado para cuando se haga login
     window.addEventListener('authStateChanged', this.checkAuthStatus);
-
     document.addEventListener('click', this.handleOutsideClick);
   },
   
@@ -147,14 +160,28 @@ export default {
   
   methods: {
     checkAuthStatus() {
+      console.log('🔍 Verificando estado de autenticación...');
+      
       const token = localStorage.getItem('token');
-      const user = localStorage.getItem('user');
+      const usuarioStr = localStorage.getItem('usuario');
       const avatarPrefs = localStorage.getItem('avatarPreferencias');
       
-      if (token && user) {
+      console.log('📦 Token:', token ? 'Existe' : 'No existe');
+      console.log('📦 Usuario:', usuarioStr);
+      
+      if (token && usuarioStr) {
         try {
+          const usuario = JSON.parse(usuarioStr);
           this.isAuthenticated = true;
-         
+          this.userName = usuario.usuario;
+          this.userRole = usuario.rol || 'usuario';
+          
+          console.log('✅ Usuario autenticado:', {
+            nombre: this.userName,
+            rol: this.userRole,
+            esAdmin: this.isAdminOrMod
+          });
+          
           if (avatarPrefs) {
             const avatarData = JSON.parse(avatarPrefs);
             if (avatarData.personajeBase) {
@@ -163,12 +190,14 @@ export default {
           }
           
         } catch (error) {
-          console.error('Error parsing user data:', error);
+          console.error('❌ Error parseando usuario:', error);
           this.forceLogout();
         }
       } else {
+        console.log('❌ No hay sesión activa');
         this.isAuthenticated = false;
         this.userName = '';
+        this.userRole = '';
         this.userAvatar = require('@/assets/perfil/reemplazarP.png'); 
       }
     },
@@ -210,18 +239,16 @@ export default {
           throw new Error('Error al cerrar sesión');
         }
         
-        // Si la respuesta es exitosa, limpiar localStorage
         this.forceLogout();
         
       } catch (error) {
         console.error('Error en logout:', error.message);
-        // Incluso si hay error, limpiar localStorage
         this.forceLogout();
       } finally {
         this.showLogoutModal = false;
       }
-    
     },
+    
     handleOutsideClick(event) {
       const headerEl = this.$el;
       if (!headerEl) return;
@@ -229,21 +256,19 @@ export default {
         this.closeAll();
       }
     },
+    
     forceLogout() {
-      // Limpiar localStorage
       localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      localStorage.removeItem('usuario');
       localStorage.removeItem('avatarPreferencias');
       
-      // Actualizar estado
       this.isAuthenticated = false;
       this.userName = '';
+      this.userRole = '';
       this.userAvatar = require('@/assets/perfil/reemplazarP.png');
       
-      // Disparar evento para que otros componentes se enteren
       window.dispatchEvent(new Event('authStateChanged'));
       
-      // Redirigir al inicio
       this.$router.push('/').catch(() => {});
     }
   }
@@ -341,6 +366,45 @@ body {
   background-color: rgba(66, 185, 131, 0.1);
 }
 
+/* ⭐ ESTILOS PARA EL BOTÓN FAQ */
+.faq-link {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: white !important;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+  transition: all 0.3s ease;
+}
+
+.faq-link:hover {
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+  color: white !important;
+}
+
+.faq-link.router-link-active {
+  background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);
+}
+
+/* ⭐ ESTILOS PARA EL BOTÓN DE DASHBOARD */
+.dashboard-link {
+  background: linear-gradient(135deg, #42b983 0%, #2c8f5e 100%);
+  color: white !important;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(66, 185, 131, 0.3);
+  transition: all 0.3s ease;
+}
+
+.dashboard-link:hover {
+  background: linear-gradient(135deg, #2c8f5e 0%, #42b983 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(66, 185, 131, 0.4);
+}
+
+.dashboard-link.router-link-active {
+  background: linear-gradient(135deg, #2c8f5e 0%, #1f7245 100%);
+}
+
 .nav-link-user-container {
   display: flex !important;
   flex-direction: column;
@@ -358,8 +422,6 @@ body {
   background-color: rgba(66, 185, 131, 0.1);
 }
 
-
-
 .avatar-img {
   width: 40px;
   height: 40px;
@@ -374,7 +436,6 @@ body {
   transform: scale(1.05);
 }
 
-/* Menú hamburguesa (oculto en desktop) */
 .menu-toggle {
   display: none;
   background: none;
@@ -395,7 +456,6 @@ body {
   transition: all 0.3s ease;
 }
 
-/*  dropdown */
 .nav-item.dropdown .nav-link {
   padding: 8px 16px;
   transition: all 0.3s ease;
@@ -456,7 +516,6 @@ body {
   color: #dc3545 !important;
 }
 
-/* Modal styles */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -526,120 +585,100 @@ body {
   background-color: #5a6268;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
-.header {
-  padding: 1rem;
-}
-
-
-.menu-toggle {
-  display: block;
-  position: absolute;
-  right: 16px;
-  top: 14px;
-  z-index: 2001;
-}
-
-.navigation {
-  width: 82%;
-  height: 100vh;
-  border-top-right-radius: 8px;
-  max-width: 230px;
-  transform: translateX(100%);
-  transition: transform .25s ease;
-  background: #ffffff;
-  position: fixed;
-  top: 0;
-  right: 0;
-  z-index: 2000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) ;
-  overflow-y: auto;
-  padding-top: 70px;
-  will-change: transform;
-  background-image: linear-gradient(rgb(255, 255, 255), rgba(77, 165, 0, 0.173));
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-.navigation.active {
-  transform: translateX(0);
-}
-
-.nav-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 12px;
-  margin: 0;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-.nav-link {
-  font-size: 1.05rem;
-  padding: 10px 12px;
-  border-radius: 12px;
-  transition: all 0.2s ease;
-  font-weight: 500;
-}
-
-.dropdown-menu {
-  display: none;
-  padding-left: 16px;
-  margin-top: 6px;
-  position: static;
-  z-index: 1500;
-  width: 100%;
-
+  .header {
+    padding: 1rem;
   }
-.nav-link:hover {
-  background-color: rgba(66, 185, 131, 0.15);
-  
-}
 
-.dropdown-menu.active {
-  display: block;
-  padding: 8px;
-  border-radius: 8px;
-}
-.dropdown-link {
-  display: block;
-  font-size: 0.95rem;
-  padding: 10px 12px;
-  border-radius: 8px;
-}
-.drawer-logout {
-  position: absolute;
-  bottom: 16px;
-  left: 12px;
-  right: 12px;
-}
-
-/* Efecto activo para el botón hamburguesa */
-.menu-toggle.active .bar:nth-child(1) {
-  transform: translateY(8px) rotate(45deg);
-}
-
-.menu-toggle.active .bar:nth-child(2) {
-  opacity: 0;
-}
-
-.menu-toggle.active .bar:nth-child(3) {
-  transform: translateY(-8px) rotate(-45deg);
-}
-
-@media (max-width: var(--tablet)) {
-/* Estilos para pantallas más pequeñas que tablet */
-.elemento {
-  font-size: 14px;
-}
-@media (max-width: 768px) {
   .menu-toggle {
     display: block;
+    position: absolute;
+    right: 16px;
+    top: 14px;
+    z-index: 2001;
   }
-}
-}
+
+  .navigation {
+    width: 82%;
+    height: 100vh;
+    border-top-right-radius: 8px;
+    max-width: 230px;
+    transform: translateX(100%);
+    transition: transform .25s ease;
+    background: #ffffff;
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 2000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    padding-top: 70px;
+    will-change: transform;
+    background-image: linear-gradient(rgb(255, 255, 255), rgba(77, 165, 0, 0.173));
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .navigation.active {
+    transform: translateX(0);
+  }
+
+  .nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px;
+    margin: 0;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .nav-link {
+    font-size: 1.05rem;
+    padding: 10px 12px;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+  }
+
+  .dropdown-menu {
+    display: none;
+    padding-left: 16px;
+    margin-top: 6px;
+    position: static;
+    z-index: 1500;
+    width: 100%;
+  }
+
+  .nav-link:hover {
+    background-color: rgba(66, 185, 131, 0.15);
+  }
+
+  .dropdown-menu.active {
+    display: block;
+    padding: 8px;
+    border-radius: 8px;
+  }
+
+  .dropdown-link {
+    display: block;
+    font-size: 0.95rem;
+    padding: 10px 12px;
+    border-radius: 8px;
+  }
+
+  .menu-toggle.active .bar:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+  }
+
+  .menu-toggle.active .bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .menu-toggle.active .bar:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+  }
 }
 </style>

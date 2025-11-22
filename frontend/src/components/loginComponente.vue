@@ -82,19 +82,18 @@ async handleSubmit() {
   this.loading = true;
   this.error = '';
 
+  console.log('📤 Enviando solicitud de login...');
+
   try {
     const response = await axios.post(
       'http://localhost:3000/api/login',
       {
         usuario: this.usuario,
         contraseña: this.contraseña,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }
       }
     );
+
+    console.log('📥 Respuesta recibida:', response.data);
 
     if (!response.data.token) {
       throw new Error('No se recibió token del servidor');
@@ -102,18 +101,23 @@ async handleSubmit() {
 
     // Guardar token y datos de usuario
     localStorage.setItem('token', response.data.token);
-    localStorage.setItem('user', JSON.stringify(response.data.user));
+    localStorage.setItem('usuario', JSON.stringify(response.data.usuario));
+
+    console.log('✅ Token guardado:', response.data.token.substring(0, 20) + '...');
+    console.log('✅ Usuario guardado:', response.data.usuario);
 
     // Disparar evento para actualizar navbar
     window.dispatchEvent(new Event('authStateChanged'));
     
-    // Esperar un pequeño delay para asegurar que el evento se procesó
-    setTimeout(() => {
-      this.$router.push('/');
-    }, 100);
+    console.log('🏠 Redirigiendo a home...');
+    
+    // Redirigir
+    this.$router.push('/');
     
   } catch (err) {
-    console.error('Error en login:', err);
+    console.error('❌ Error completo:', err);
+    console.error('❌ Respuesta del servidor:', err.response);
+    
     this.error = err.response?.data?.error || 
                 err.message || 
                 'Error al iniciar sesión';

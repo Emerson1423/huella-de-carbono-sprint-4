@@ -11,20 +11,25 @@ passport.use(new GoogleStrategy({
     try {
       const email = profile.emails[0].value;
       
-      // SOLO buscar si el usuario existe, NO crear nada aún
+      // Buscar usuario con su rol
       const [usuarios] = await pool.query(
-        'SELECT * FROM usuarios WHERE correo = ?', 
+        `SELECT u.*, r.nombre as rol_nombre 
+         FROM usuarios u 
+         LEFT JOIN roles r ON u.rol_id = r.id 
+         WHERE u.correo = ?`, 
         [email]
       );
       
       if (usuarios.length > 0) {
-        // Usuario YA existe - login directo
+        // Usuario YA existe - login directo con rol
         const usuario = usuarios[0];
         return done(null, {
           exists: true,
           id: usuario.id,
           usuario: usuario.usuario,
-          correo: usuario.correo
+          correo: usuario.correo,
+          rol: usuario.rol_nombre || 'usuario',
+          rol_id: usuario.rol_id
         });
       } else {
         // Usuario NUEVO - NO crear en BD, solo pasar datos

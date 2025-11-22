@@ -14,14 +14,16 @@ router.get('/auth/google',
 router.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/' }),
   (req, res) => {
-   
     
     if (req.user.exists) {
+      // Usuario existente - incluir rol en el token
       const token = jwt.sign(
         {
           id: req.user.id,
           usuario: req.user.usuario,
-          correo: req.user.correo
+          correo: req.user.correo,
+          rol: req.user.rol || 'usuario',
+          rol_id: req.user.rol_id
         },
         JWT_SECRET,
         { expiresIn: '4h' }
@@ -29,6 +31,7 @@ router.get('/auth/google/callback',
       res.redirect(`http://localhost:8080/login-google?token=${token}`);
       
     } else {
+      // Usuario nuevo - token temporal sin rol
       const tempToken = jwt.sign(
         {
           email: req.user.correo || req.user.email, 
@@ -38,7 +41,6 @@ router.get('/auth/google/callback',
         JWT_SECRET,
         { expiresIn: '10m' }
       );
-      
       
       res.redirect(`http://localhost:8080/completar-registro-google?temp_token=${tempToken}`);
     }
