@@ -356,7 +356,7 @@ export default {
         {
           id: 'cuenta',
           nombre: 'Cuenta y Perfil',
-          icono: '👤',
+          icono: '',
           faqs: [
             {
               pregunta: '¿Cómo creo una cuenta?',
@@ -375,7 +375,7 @@ export default {
         {
           id: 'huella',
           nombre: 'Cálculo de Huella',
-          icono: '🌱',
+          icono: '',
           faqs: [
             {
               pregunta: '¿Con qué frecuencia puedo calcular mi huella?',
@@ -394,7 +394,7 @@ export default {
         {
           id: 'habitos',
           nombre: 'Hábitos Ecológicos',
-          icono: '🌿',
+          icono: '',
           faqs: [
             {
               pregunta: '¿Cuántos hábitos puedo agregar?',
@@ -409,7 +409,7 @@ export default {
         {
           id: 'juegos',
           nombre: 'Entretenimiento',
-          icono: '🎮',
+          icono: '',
           faqs: [
             {
               pregunta: '¿Puedo guardar mi puntuación?',
@@ -424,7 +424,7 @@ export default {
         {
           id: 'tecnico',
           nombre: 'Problemas Técnicos',
-          icono: '🔧',
+          icono: '',
           faqs: [
             {
               pregunta: 'La página no carga correctamente',

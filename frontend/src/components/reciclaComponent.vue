@@ -326,11 +326,11 @@ export default {
   methods: {
     verificarAutenticacion() {
       const token = localStorage.getItem('token');
-      const user = localStorage.getItem('user');
+      const usuario = localStorage.getItem('usuario');
       
-      if (token && user) {
+      if (token && usuario) {
         this.usuarioLogueado = true;
-        this.usuarioActual = JSON.parse(user);
+        this.usuarioActual = JSON.parse(usuario);
       } else {
         this.usuarioLogueado = false;
         this.usuarioActual = null;
@@ -355,6 +355,8 @@ export default {
 
     empezarJuego() {
       this.verificarAutenticacion();
+      // Reiniciar el estado del juego antes de comenzar para evitar valores residuales
+      if (typeof this.reiniciarJuego === 'function') this.reiniciarJuego();
       this.mostrarModalInfo = false;
       this.juegoActivo = true;
       this.iniciarTemporizador();

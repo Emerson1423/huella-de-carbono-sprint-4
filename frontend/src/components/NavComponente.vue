@@ -56,13 +56,6 @@
               </li>
             </ul>
           </li>
-
-          <li v-if="isAuthenticated" class="nav-item">
-            <router-link to="/soporte" class="nav-link faq-link" @click="closeMenu">
-              <i class="fas fa-question-circle"></i> FAQ
-            </router-link>
-          </li>
-
           <li v-if="isAuthenticated && isAdminOrMod" class="nav-item">
             <router-link to="/dashboard" class="nav-link dashboard-link" @click="closeMenu">
               <i class="fas fa-tachometer-alt"></i> Dashboard
@@ -144,7 +137,7 @@ export default {
   },
   
   mounted() {
-    console.log('🔄 NavBar montado, verificando autenticación...');
+    console.log('NavBar montado, verificando autenticación...');
     this.checkAuthStatus();
     
     window.addEventListener('storage', this.checkAuthStatus);
@@ -160,14 +153,14 @@ export default {
   
   methods: {
     checkAuthStatus() {
-      console.log('🔍 Verificando estado de autenticación...');
+      console.log('Verificando estado de autenticación...');
       
       const token = localStorage.getItem('token');
       const usuarioStr = localStorage.getItem('usuario');
       const avatarPrefs = localStorage.getItem('avatarPreferencias');
       
-      console.log('📦 Token:', token ? 'Existe' : 'No existe');
-      console.log('📦 Usuario:', usuarioStr);
+      console.log('Token:', token ? 'Existe' : 'No existe');
+      console.log('Usuario:', usuarioStr);
       
       if (token && usuarioStr) {
         try {
@@ -176,7 +169,7 @@ export default {
           this.userName = usuario.usuario;
           this.userRole = usuario.rol || 'usuario';
           
-          console.log('✅ Usuario autenticado:', {
+          console.log('Usuario autenticado:', {
             nombre: this.userName,
             rol: this.userRole,
             esAdmin: this.isAdminOrMod
@@ -190,11 +183,11 @@ export default {
           }
           
         } catch (error) {
-          console.error('❌ Error parseando usuario:', error);
+          console.error('Error parseando usuario:', error);
           this.forceLogout();
         }
       } else {
-        console.log('❌ No hay sesión activa');
+        console.log(' No hay sesión activa');
         this.isAuthenticated = false;
         this.userName = '';
         this.userRole = '';
