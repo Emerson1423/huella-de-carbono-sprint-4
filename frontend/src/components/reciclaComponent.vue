@@ -44,11 +44,12 @@
         </div>
       </div>
       
-      <div class="basura-container">
+       <div class="basura-container">
         <div class="current-item" :class="{ 'correct': feedback.correcto, 'wrong': feedback.incorrecto }">
-          <img 
+          <img
             v-if="itemActual"
             :src="itemActual.src"
+            :alt="itemActual.nombre || itemActual.id || 'Item para reciclar'"
             :id="itemActual.id"
             class="basura-item"
             draggable="true"
@@ -57,10 +58,11 @@
           >
         </div>
       </div>
-      
+
       <div class="message-area">
         <p :class="messageClass">{{ mensaje }}</p>
       </div>
+      
     </div>
 
     <!-- Modal de Guía -->
@@ -135,7 +137,6 @@
       </div>
     </div>
 
-    <!-- Modal de Juego Completado (todos los residuos reciclados) -->
     <div v-if="juegoCompletado && !juegoTerminado" class="modal-overlay">
       <div class="modal-content">
         <h2>¡Juego Completado!</h2>
@@ -516,10 +517,7 @@ export default {
   overflow-y: auto;
 }
 
-.modal-content {
-  position: relative;
-  padding: 2rem;
-}
+
 
 .modal-content h2 {
   padding-right: 40px; 
@@ -727,6 +725,7 @@ h1 {
   position: relative;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 }
+
 
 .guide-subtitle {
   color: #666;

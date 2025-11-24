@@ -317,25 +317,8 @@ export default {
   border-top: 2px solid #e0e0e0;
 }
 
-.evento-card {
-  transition: all 0.3s ease;
-}
 
-.evento-card.expandido {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
 
-.btn-ver-mas {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.3s ease;
-}
-
-.btn-ver-mas i {
-  transition: transform 0.3s ease;
-}
 
 .eventos-container {
   font-family: 'Poppins', sans-serif;
@@ -699,8 +682,12 @@ export default {
   cursor: pointer;
   font-weight: 600;
   align-self: flex-start;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease;  
   font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .btn-ver-mas:hover {

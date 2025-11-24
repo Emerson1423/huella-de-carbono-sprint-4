@@ -171,36 +171,40 @@
             </div>
           </div>
 
-          <!-- Controles de estado y prioridad -->
-          <div class="controles-mensaje">
-            <div class="control-group">
-              <label>Estado:</label>
-              <select 
-                v-model="nuevoEstado" 
-                @change="actualizarEstado"
-                class="control-select"
-              >
-                <option value="pendiente">Pendiente</option>
-                <option value="en_proceso">En Proceso</option>
-                <option value="resuelto">Resuelto</option>
-                <option value="cerrado">Cerrado</option>
-              </select>
-            </div>
-
-            <div class="control-group">
-              <label>Prioridad:</label>
-              <select 
-                v-model="nuevaPrioridad" 
-                @change="actualizarPrioridad"
-                class="control-select"
-              >
-                <option value="baja">Baja</option>
-                <option value="media">Media</option>
-                <option value="alta">Alta</option>
-                <option value="urgente">Urgente</option>
-              </select>
-            </div>
+  
+        <!-- Controles de estado y prioridad -->
+        <div class="controles-mensaje">
+          <div class="control-group">
+            <label for="estado-select">Estado:</label>
+            <select 
+              id="estado-select"
+              v-model="nuevoEstado" 
+              @change="actualizarEstado"
+              class="control-select"
+            >
+              <option value="pendiente">Pendiente</option>
+              <option value="en_proceso">En Proceso</option>
+              <option value="resuelto">Resuelto</option>
+              <option value="cerrado">Cerrado</option>
+            </select>
           </div>
+
+          <div class="control-group">
+            <label for="prioridad-select">Prioridad:</label>
+            <select 
+              id="prioridad-select"
+              v-model="nuevaPrioridad" 
+              @change="actualizarPrioridad"
+              class="control-select"
+            >
+              <option value="baja">Baja</option>
+              <option value="media">Media</option>
+              <option value="alta">Alta</option>
+              <option value="urgente">Urgente</option>
+            </select>
+          </div>
+        </div>
+      
 
           <!-- Respuestas existentes -->
           <div class="respuestas-section">
@@ -498,7 +502,6 @@ export default {
       };
       return estados[estado] || estado;
     },
-
     formatearFecha(fecha) {
       const date = new Date(fecha);
       const ahora = new Date();
@@ -508,9 +511,9 @@ export default {
       const dias = Math.floor(diff / 86400000);
 
       if (minutos < 1) return 'Hace un momento';
-      if (minutos < 60) return `Hace ${minutos} minuto${minutos !== 1 ? 's' : ''}`;
-      if (horas < 24) return `Hace ${horas} hora${horas !== 1 ? 's' : ''}`;
-      if (dias < 7) return `Hace ${dias} día${dias !== 1 ? 's' : ''}`;
+      if (minutos < 60) return `Hace ${minutos} minuto${minutos === 1 ? '' : 's'}`;
+      if (horas < 24) return `Hace ${horas} hora${horas === 1 ? '' : 's'}`;
+      if (dias < 7) return `Hace ${dias} día${dias === 1 ? '' : 's'}`;
       
       return date.toLocaleDateString('es-ES', { 
         year: 'numeric', 

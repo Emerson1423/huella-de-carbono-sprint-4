@@ -1004,20 +1004,6 @@ h1 {
   max-width: 200px;
 }
 
-.btn-save {
-  background: #2196F3;
-  color: white;
-  border: none;
-  padding: 12px 25px;
-  border-radius: 25px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  width: 100%;
-  max-width: 250px;
-  font-weight: 600;
-}
-
 
 .btn-warning {
   background: #FF9800;

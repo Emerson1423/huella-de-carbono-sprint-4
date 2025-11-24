@@ -70,9 +70,9 @@
         <div class="modal-content">
           <p class="info-text">Usuario: <span class="font-bold">{{ usuarioEditar.usuario }}</span></p>
           <p class="info-text">Correo: <span class="font-bold">{{ usuarioEditar.correo }}</span></p>
-          
-          <label class="label">Seleccionar nuevo rol:</label>
-          <select v-model="nuevoRolId" class="select">
+              
+          <label for="select-rol" class="label">Seleccionar nuevo rol:</label>
+          <select id="select-rol" v-model="nuevoRolId" class="select">
             <option value="">-- Seleccione un rol --</option>
             <option v-for="rol in roles" :key="rol.id" :value="rol.id">
               {{ rol.nombre }} - {{ rol.descripcion }}
@@ -153,7 +153,7 @@ export default {
           headers: {
             'Authorization': `Bearer ${token}`
           }
-        });
+        }); 
         
         if (!response.ok) throw new Error('Error al obtener usuarios');
         

@@ -247,8 +247,8 @@ Minijuegos Educativos
 </div>
 </div>
 <div class="minigame-card border-green">
-  <h4 class="minigame-title text-green"></h4>
-  <p class="minigame-desc"></p>
+  <h4 class="minigame-title text-green">Título del Minijuego</h4>
+  <p class="minigame-desc">Descripción del minijuego de aventura</p>
   <span class="minigame-tag tag-green">Aventura</span>
 </div>
 </section>
@@ -491,14 +491,10 @@ switch(colorName) {
       --c-orange-50: #FFF7ED;
 
       --c-cyan-50: #CFFAFE;
+      min-height: 100vh;
+      font-family: "Inter", sans-serif;
+      background: linear-gradient(to bottom right, var(--c-green-50), var(--c-emerald-50), var(--c-teal-50));
       }
-
-
-    .main-container {
-    min-height: 100vh;
-    font-family: "Inter", sans-serif;
-    background: linear-gradient(to bottom right, var(--c-green-50), var(--c-emerald-50), var(--c-teal-50));
-    }
 
     .container-content {
     max-width: 1280px;

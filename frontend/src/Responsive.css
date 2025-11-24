@@ -36,12 +36,13 @@ h3{
     font-size: 1.3rem;
     color: var(--primary);
   }
-  h3{
+ h3{
     font-size: 1.2rem;
     color: var(--primary);
   }
 }
-@media (max-with: 768px) {
+
+@media (max-width: 768px) {
   h1 {
     font-size: 1.8rem;
     color: var(--primary);
@@ -51,7 +52,7 @@ h3{
     color: var(--primary);
   }
   h3{
-    font-size: 1.4rem;
+    font-size: 1.2rem;
     color: var(--primary);
   }
 }

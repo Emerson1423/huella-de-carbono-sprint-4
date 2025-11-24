@@ -140,14 +140,14 @@ export default {
     console.log('NavBar montado, verificando autenticación...');
     this.checkAuthStatus();
     
-    window.addEventListener('storage', this.checkAuthStatus);
-    window.addEventListener('authStateChanged', this.checkAuthStatus);
+    globalThis.addEventListener('storage', this.checkAuthStatus);
+    globalThis.addEventListener('authStateChanged', this.checkAuthStatus);
     document.addEventListener('click', this.handleOutsideClick);
   },
-  
+
   beforeUnmount() {
-    window.removeEventListener('storage', this.checkAuthStatus);
-    window.removeEventListener('authStateChanged', this.checkAuthStatus);
+    globalThis.removeEventListener('storage', this.checkAuthStatus);
+    globalThis.removeEventListener('authStateChanged', this.checkAuthStatus);
     document.removeEventListener('click', this.handleOutsideClick);
   },
   
@@ -251,19 +251,19 @@ export default {
     },
     
     forceLogout() {
-      localStorage.removeItem('token');
-      localStorage.removeItem('usuario');
-      localStorage.removeItem('avatarPreferencias');
-      
-      this.isAuthenticated = false;
-      this.userName = '';
-      this.userRole = '';
-      this.userAvatar = require('@/assets/perfil/reemplazarP.png');
-      
-      window.dispatchEvent(new Event('authStateChanged'));
-      
-      this.$router.push('/').catch(() => {});
-    }
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('avatarPreferencias');
+    
+    this.isAuthenticated = false;
+    this.userName = '';
+    this.userRole = '';
+    this.userAvatar = require('@/assets/perfil/reemplazarP.png');
+    
+    globalThis.dispatchEvent(new Event('authStateChanged'));
+    
+    this.$router.push('/').catch(() => {});
+  }
   }
 }
 </script>

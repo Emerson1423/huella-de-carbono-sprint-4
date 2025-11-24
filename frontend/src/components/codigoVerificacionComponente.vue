@@ -67,12 +67,12 @@ export default {
       if (!this.correo || !this.correo.includes('@')) return '';
       const [user, domain] = this.correo.split('@');
       if (user.length <= 2) return this.correo;
-      return user[0] + '*'.repeat(user.length - 2) + user[user.length - 1] + '@' + domain;
+      return user.at(0) + '*'.repeat(user.length - 2) + user.at(-1) + '@' + domain;
     }
   },
   methods: {
     onInput(i, e) {
-      const valor = e.target.value.replace(/\D/g, ''); // Solo números
+      const valor = e.target.value.replaceAll(/\D/g, '');
       if (valor === '') {
         this.codigo[i] = '';
         return;
@@ -150,7 +150,6 @@ export default {
   position: fixed;
   min-height: 100vh;
   background-image: url("@/assets/img/FondoLR.png");
-  background-size: cover;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

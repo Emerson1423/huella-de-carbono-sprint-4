@@ -527,15 +527,13 @@ export default {
      */
 
     agregarHabito(cardIndex = null) {
-  // Si se pasa un índice (desde el grid), usarlo. Si no, usar habitoActual (desde detalle)
-  const indiceHabito = cardIndex !== null ? cardIndex : this.habitoActual;
+  const indiceHabito = cardIndex === null ? this.habitoActual : cardIndex;
   
-  // Verificar que el índice sea válido
   if (indiceHabito === null || indiceHabito === undefined || indiceHabito >= this.cards.length) {
     console.error('Índice de hábito inválido:', indiceHabito);
-    alert(' Error: No se pudo identificar el hábito seleccionado.');
+    alert('Error: No se pudo identificar el hábito seleccionado.');
     return;
-  }
+  } 
   
   const habitoSeleccionado = this.cards[indiceHabito];
   
@@ -603,7 +601,7 @@ console.log('Todas las claves de hábitos:', Object.keys(localStorage).filter(k 
   // CAMBIO 4: Guardar con la clave específica del usuario
   localStorage.setItem(claveHabitos, JSON.stringify(habitosGuardados));
   
-  window.dispatchEvent(new CustomEvent('habitoAgregado', { 
+  globalThis.dispatchEvent(new CustomEvent('habitoAgregado', { 
     detail: nuevoHabito 
   }));
   

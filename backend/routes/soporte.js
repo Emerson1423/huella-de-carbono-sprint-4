@@ -1,9 +1,58 @@
 const express = require('express');
 const pool = require('../bd');
 const authenticateToken = require('../middleware/auth');
-const { isModeratorOrAdmin, isAdmin } = require('../middleware/roleAuth'); // AGREGAR ESTO
+const { isModeratorOrAdmin, isAdmin } = require('../middleware/roleAuth');
 const router = express.Router();
 
+// ============================================
+// FUNCIONES AUXILIARES
+// ============================================
+
+// Validar estados válidos
+const ESTADOS_VALIDOS = new Set(['pendiente', 'en_proceso', 'resuelto', 'cerrado']);
+const PRIORIDADES_VALIDAS = new Set(['baja', 'media', 'alta', 'urgente']);
+
+// Función para construir query con filtros
+function construirQueryFiltros(baseQuery, filtros, params) {
+  let query = baseQuery;
+  
+  if (filtros.estado && ESTADOS_VALIDOS.has(filtros.estado)) {
+    query += ' AND estado = ?';
+    params.push(filtros.estado);
+  }
+  
+  if (filtros.prioridad && PRIORIDADES_VALIDAS.has(filtros.prioridad)) {
+    query += ' AND prioridad = ?';
+    params.push(filtros.prioridad);
+  }
+  
+  if (filtros.categoria) {
+    query += ' AND categoria_id = ?';
+    params.push(filtros.categoria);
+  }
+  
+  return query;
+}
+
+// Función para obtener paginación
+function calcularPaginacion(page, limit, total) {
+  return {
+    currentPage: Number.parseInt(page, 10),
+    totalPages: Math.ceil(total / limit),
+    totalItems: total,
+    itemsPerPage: Number.parseInt(limit, 10)
+  };
+}
+
+// Función para manejar errores de forma consistente
+function manejarError(res, error, mensaje = 'Error en el servidor') {
+  console.error('Error:', error);
+  res.status(500).json({ error: mensaje });
+}
+
+// ============================================
+// RUTAS PÚBLICAS
+// ============================================
 
 router.get('/categorias', async (req, res) => {
   try {
@@ -12,10 +61,13 @@ router.get('/categorias', async (req, res) => {
     );
     res.json({ success: true, categorias });
   } catch (error) {
-    console.error('Error obteniendo categorías:', error);
-    res.status(500).json({ error: 'Error al obtener categorías' });
+    manejarError(res, error, 'Error al obtener categorías');
   }
 });
+
+// ============================================
+// RUTAS DE USUARIO
+// ============================================
 
 // Crear un nuevo mensaje de soporte
 router.post('/mensaje', authenticateToken, async (req, res) => {
@@ -24,9 +76,7 @@ router.post('/mensaje', authenticateToken, async (req, res) => {
 
   // Validaciones
   if (!categoria_id || !asunto || !mensaje) {
-    return res.status(400).json({ 
-      error: 'Faltan campos requeridos' 
-    });
+    return res.status(400).json({ error: 'Faltan campos requeridos' });
   }
 
   if (asunto.length < 5 || asunto.length > 200) {
@@ -66,59 +116,38 @@ router.post('/mensaje', authenticateToken, async (req, res) => {
       message: 'Mensaje enviado exitosamente' 
     });
   } catch (error) {
-    console.error('Error creando mensaje:', error);
-    res.status(500).json({ error: 'Error al enviar el mensaje' });
+    manejarError(res, error, 'Error al enviar el mensaje');
   }
 });
 
+// Obtener mensajes del usuario
 router.get('/mis-mensajes', authenticateToken, async (req, res) => {
   const usuario_id = req.user.id;
   const { page = 1, limit = 10, estado } = req.query;
   const offset = (page - 1) * limit;
 
   try {
-    
     let query = `
       SELECT 
-        sm.id,
-        sm.asunto,
-        sm.mensaje,
-        sm.estado,
-        sm.prioridad,
-        sm.fecha_creacion,
-        sm.fecha_actualizacion,
-        sc.nombre as categoria_nombre,
-        sc.icono as categoria_icono
+        sm.id, sm.asunto, sm.mensaje, sm.estado, sm.prioridad,
+        sm.fecha_creacion, sm.fecha_actualizacion,
+        sc.nombre as categoria_nombre, sc.icono as categoria_icono
       FROM soporte_mensajes sm
       INNER JOIN soporte_categorias sc ON sm.categoria_id = sc.id
       WHERE sm.usuario_id = ?
     `;
     
     const params = [usuario_id];
-
-    // Filtro opcional por estado
-    if (estado && ['pendiente', 'en_proceso', 'resuelto', 'cerrado'].includes(estado)) {
-      query += ' AND sm.estado = ?';
-      params.push(estado);
-    }
-
+    query = construirQueryFiltros(query, { estado }, params);
     query += ' ORDER BY sm.fecha_creacion DESC LIMIT ? OFFSET ?';
-    params.push(parseInt(limit), offset);
+    params.push(Number.parseInt(limit, 10), offset);
 
     const [mensajes] = await pool.query(query, params);
 
     // Contar total
-    let countQuery = `
-      SELECT COUNT(*) as total 
-      FROM soporte_mensajes 
-      WHERE usuario_id = ?
-    `;
+    let countQuery = 'SELECT COUNT(*) as total FROM soporte_mensajes WHERE usuario_id = ?';
     const countParams = [usuario_id];
-    
-    if (estado && ['pendiente', 'en_proceso', 'resuelto', 'cerrado'].includes(estado)) {
-      countQuery += ' AND estado = ?';
-      countParams.push(estado);
-    }
+    countQuery = construirQueryFiltros(countQuery, { estado }, countParams);
 
     const [totalCount] = await pool.query(countQuery, countParams);
     const total = totalCount[0].total;
@@ -126,21 +155,12 @@ router.get('/mis-mensajes', authenticateToken, async (req, res) => {
     res.json({
       success: true,
       mensajes,
-      pagination: {
-        currentPage: parseInt(page),
-        totalPages: Math.ceil(total / limit),
-        totalItems: total,
-        itemsPerPage: parseInt(limit)
-      }
+      pagination: calcularPaginacion(page, limit, total)
     });
   } catch (error) {
-    console.error('Error obteniendo mensajes:', error);
-    res.status(500).json({ error: 'Error al obtener mensajes' });
+    manejarError(res, error, 'Error al obtener mensajes');
   }
 });
-
-// Obtener un mensaje específico con sus respuestas
-// Reemplaza este endpoint en tu archivo de rutas de soporte
 
 // Obtener un mensaje específico con sus respuestas
 router.get('/mensaje/:id', authenticateToken, async (req, res) => {
@@ -148,17 +168,13 @@ router.get('/mensaje/:id', authenticateToken, async (req, res) => {
   const usuario_id = req.user.id;
 
   try {
-    // Obtener el mensaje principal
     const [mensajes] = await pool.query(
-      `SELECT 
-        sm.*,
-        sc.nombre as categoria_nombre,
-        sc.icono as categoria_icono,
-        u.usuario as nombre_usuario
-      FROM soporte_mensajes sm
-      INNER JOIN soporte_categorias sc ON sm.categoria_id = sc.id
-      INNER JOIN usuarios u ON sm.usuario_id = u.id
-      WHERE sm.id = ? AND sm.usuario_id = ?`,
+      `SELECT sm.*, sc.nombre as categoria_nombre, sc.icono as categoria_icono,
+              u.usuario as nombre_usuario
+       FROM soporte_mensajes sm
+       INNER JOIN soporte_categorias sc ON sm.categoria_id = sc.id
+       INNER JOIN usuarios u ON sm.usuario_id = u.id
+       WHERE sm.id = ? AND sm.usuario_id = ?`,
       [mensaje_id, usuario_id]
     );
 
@@ -168,19 +184,15 @@ router.get('/mensaje/:id', authenticateToken, async (req, res) => {
 
     const mensaje = mensajes[0];
 
-    // Obtener todas las respuestas
     const [respuestas] = await pool.query(
-      `SELECT 
-        sr.*,
-        u.usuario as nombre_usuario
-      FROM soporte_respuestas sr
-      LEFT JOIN usuarios u ON sr.usuario_id = u.id
-      WHERE sr.mensaje_id = ?
-      ORDER BY sr.fecha_creacion ASC`,
+      `SELECT sr.*, u.usuario as nombre_usuario
+       FROM soporte_respuestas sr
+       LEFT JOIN usuarios u ON sr.usuario_id = u.id
+       WHERE sr.mensaje_id = ?
+       ORDER BY sr.fecha_creacion ASC`,
       [mensaje_id]
     );
 
-    // Si hay respuestas del admin, agregar la última al mensaje principal
     const respuestaAdmin = respuestas.find(r => r.es_admin === 1 || r.es_admin === true);
     
     if (respuestaAdmin) {
@@ -189,81 +201,9 @@ router.get('/mensaje/:id', authenticateToken, async (req, res) => {
       mensaje.fecha_respuesta = respuestaAdmin.fecha_creacion;
     }
 
-    res.json({
-      success: true,
-      mensaje: mensaje,
-      respuestas: respuestas // Por si quieres mostrar todo el historial
-    });
+    res.json({ success: true, mensaje, respuestas });
   } catch (error) {
-    console.error('Error obteniendo mensaje:', error);
-    res.status(500).json({ error: 'Error al obtener el mensaje' });
-  }
-});
-
-// También actualiza el endpoint de mis-mensajes para mostrar si tienen respuesta
-router.get('/mis-mensajes', authenticateToken, async (req, res) => {
-  const usuario_id = req.user.id;
-  const { page = 1, limit = 10, estado } = req.query;
-  const offset = (page - 1) * limit;
-
-  try {
-    let query = `
-      SELECT 
-        sm.id,
-        sm.asunto,
-        sm.mensaje,
-        sm.estado,
-        sm.prioridad,
-        sm.fecha_creacion,
-        sm.fecha_actualizacion,
-        sc.nombre as categoria_nombre,
-        sc.icono as categoria_icono,
-        (SELECT COUNT(*) FROM soporte_respuestas WHERE mensaje_id = sm.id AND es_admin = TRUE) as tiene_respuesta
-      FROM soporte_mensajes sm
-      INNER JOIN soporte_categorias sc ON sm.categoria_id = sc.id
-      WHERE sm.usuario_id = ?
-    `;
-    
-    const params = [usuario_id];
-
-    if (estado && ['pendiente', 'en_proceso', 'resuelto', 'cerrado'].includes(estado)) {
-      query += ' AND sm.estado = ?';
-      params.push(estado);
-    }
-
-    query += ' ORDER BY sm.fecha_creacion DESC LIMIT ? OFFSET ?';
-    params.push(parseInt(limit), offset);
-
-    const [mensajes] = await pool.query(query, params);
-
-    let countQuery = `
-      SELECT COUNT(*) as total 
-      FROM soporte_mensajes 
-      WHERE usuario_id = ?
-    `;
-    const countParams = [usuario_id];
-    
-    if (estado && ['pendiente', 'en_proceso', 'resuelto', 'cerrado'].includes(estado)) {
-      countQuery += ' AND estado = ?';
-      countParams.push(estado);
-    }
-
-    const [totalCount] = await pool.query(countQuery, countParams);
-    const total = totalCount[0].total;
-
-    res.json({
-      success: true,
-      mensajes,
-      pagination: {
-        currentPage: parseInt(page),
-        totalPages: Math.ceil(total / limit),
-        totalItems: total,
-        itemsPerPage: parseInt(limit)
-      }
-    });
-  } catch (error) {
-    console.error('Error obteniendo mensajes:', error);
-    res.status(500).json({ error: 'Error al obtener mensajes' });
+    manejarError(res, error, 'Error al obtener el mensaje');
   }
 });
 
@@ -279,25 +219,19 @@ router.get('/estadisticas', authenticateToken, async (req, res) => {
         SUM(CASE WHEN estado = 'en_proceso' THEN 1 ELSE 0 END) as en_proceso,
         SUM(CASE WHEN estado = 'resuelto' THEN 1 ELSE 0 END) as resueltos,
         SUM(CASE WHEN estado = 'cerrado' THEN 1 ELSE 0 END) as cerrados
-      FROM soporte_mensajes 
-      WHERE usuario_id = ?`,
+      FROM soporte_mensajes WHERE usuario_id = ?`,
       [usuario_id]
     );
 
-    res.json({
-      success: true,
-      estadisticas: stats[0]
-    });
+    res.json({ success: true, estadisticas: stats[0] });
   } catch (error) {
-    console.error('Error obteniendo estadísticas:', error);
-    res.status(500).json({ error: 'Error al obtener estadísticas' });
+    manejarError(res, error, 'Error al obtener estadísticas');
   }
 });
 
 // ============================================
 // RUTAS DE ADMINISTRACIÓN
 // ============================================
-
 
 router.get('/admin/estadisticas', authenticateToken, isModeratorOrAdmin, async (req, res) => {
   try {
@@ -312,8 +246,7 @@ router.get('/admin/estadisticas', authenticateToken, isModeratorOrAdmin, async (
     );
     res.json({ success: true, estadisticas: stats[0] });
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Error al obtener estadísticas' });
+    manejarError(res, error, 'Error al obtener estadísticas');
   }
 });
 
@@ -325,16 +258,9 @@ router.get('/admin/mensajes', authenticateToken, isModeratorOrAdmin, async (req,
   try {
     let query = `
       SELECT 
-        sm.id,
-        sm.usuario_id,
-        sm.asunto,
-        sm.mensaje,
-        sm.estado,
-        sm.prioridad,
-        sm.fecha_creacion,
-        sm.fecha_actualizacion,
-        sc.nombre as categoria_nombre,
-        sc.icono as categoria_icono,
+        sm.id, sm.usuario_id, sm.asunto, sm.mensaje, sm.estado, sm.prioridad,
+        sm.fecha_creacion, sm.fecha_actualizacion,
+        sc.nombre as categoria_nombre, sc.icono as categoria_icono,
         u.usuario as nombre_usuario,
         (SELECT COUNT(*) FROM soporte_respuestas WHERE mensaje_id = sm.id) as total_respuestas
       FROM soporte_mensajes sm
@@ -344,42 +270,15 @@ router.get('/admin/mensajes', authenticateToken, isModeratorOrAdmin, async (req,
     `;
     
     const params = [];
-
-    if (estado && ['pendiente', 'en_proceso', 'resuelto', 'cerrado'].includes(estado)) {
-      query += ' AND sm.estado = ?';
-      params.push(estado);
-    }
-
-    if (prioridad && ['baja', 'media', 'alta', 'urgente'].includes(prioridad)) {
-      query += ' AND sm.prioridad = ?';
-      params.push(prioridad);
-    }
-
-    if (categoria) {
-      query += ' AND sm.categoria_id = ?';
-      params.push(categoria);
-    }
-
+    query = construirQueryFiltros(query, { estado, prioridad, categoria }, params);
     query += ' ORDER BY sm.fecha_creacion DESC LIMIT ? OFFSET ?';
-    params.push(parseInt(limit), offset);
+    params.push(Number.parseInt(limit, 10), offset);
 
     const [mensajes] = await pool.query(query, params);
 
     let countQuery = 'SELECT COUNT(*) as total FROM soporte_mensajes WHERE 1=1';
     const countParams = [];
-    
-    if (estado && ['pendiente', 'en_proceso', 'resuelto', 'cerrado'].includes(estado)) {
-      countQuery += ' AND estado = ?';
-      countParams.push(estado);
-    }
-    if (prioridad && ['baja', 'media', 'alta', 'urgente'].includes(prioridad)) {
-      countQuery += ' AND prioridad = ?';
-      countParams.push(prioridad);
-    }
-    if (categoria) {
-      countQuery += ' AND categoria_id = ?';
-      countParams.push(categoria);
-    }
+    countQuery = construirQueryFiltros(countQuery, { estado, prioridad, categoria }, countParams);
 
     const [totalCount] = await pool.query(countQuery, countParams);
     const total = totalCount[0].total;
@@ -387,35 +286,25 @@ router.get('/admin/mensajes', authenticateToken, isModeratorOrAdmin, async (req,
     res.json({
       success: true,
       mensajes,
-      pagination: {
-        currentPage: parseInt(page),
-        totalPages: Math.ceil(total / limit),
-        totalItems: total,
-        itemsPerPage: parseInt(limit)
-      }
+      pagination: calcularPaginacion(page, limit, total)
     });
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Error al obtener mensajes' });
+    manejarError(res, error, 'Error al obtener mensajes');
   }
 });
 
-// Ver mensaje específico (admin puede ver cualquiera)
+// Ver mensaje específico (admin)
 router.get('/admin/mensaje/:id', authenticateToken, isModeratorOrAdmin, async (req, res) => {
   const mensaje_id = req.params.id;
 
   try {
     const [mensajes] = await pool.query(
-      `SELECT 
-        sm.*,
-        sc.nombre as categoria_nombre,
-        sc.icono as categoria_icono,
-        u.usuario as nombre_usuario,
-        u.correo as correo_usuario
-      FROM soporte_mensajes sm
-      INNER JOIN soporte_categorias sc ON sm.categoria_id = sc.id
-      INNER JOIN usuarios u ON sm.usuario_id = u.id
-      WHERE sm.id = ?`,
+      `SELECT sm.*, sc.nombre as categoria_nombre, sc.icono as categoria_icono,
+              u.usuario as nombre_usuario, u.correo as correo_usuario
+       FROM soporte_mensajes sm
+       INNER JOIN soporte_categorias sc ON sm.categoria_id = sc.id
+       INNER JOIN usuarios u ON sm.usuario_id = u.id
+       WHERE sm.id = ?`,
       [mensaje_id]
     );
 
@@ -424,24 +313,17 @@ router.get('/admin/mensaje/:id', authenticateToken, isModeratorOrAdmin, async (r
     }
 
     const [respuestas] = await pool.query(
-      `SELECT 
-        sr.*,
-        u.usuario as nombre_usuario
-      FROM soporte_respuestas sr
-      LEFT JOIN usuarios u ON sr.usuario_id = u.id
-      WHERE sr.mensaje_id = ?
-      ORDER BY sr.fecha_creacion ASC`,
+      `SELECT sr.*, u.usuario as nombre_usuario
+       FROM soporte_respuestas sr
+       LEFT JOIN usuarios u ON sr.usuario_id = u.id
+       WHERE sr.mensaje_id = ?
+       ORDER BY sr.fecha_creacion ASC`,
       [mensaje_id]
     );
 
-    res.json({
-      success: true,
-      mensaje: mensajes[0],
-      respuestas
-    });
+    res.json({ success: true, mensaje: mensajes[0], respuestas });
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Error al obtener el mensaje' });
+    manejarError(res, error, 'Error al obtener el mensaje');
   }
 });
 
@@ -477,21 +359,13 @@ router.post('/admin/respuesta', authenticateToken, isModeratorOrAdmin, async (re
       [mensaje_id, usuario_id, respuesta]
     );
 
-    if (mensaje[0].estado === 'pendiente') {
-      await pool.query(
-        `UPDATE soporte_mensajes 
-         SET estado = 'en_proceso', fecha_actualizacion = CURRENT_TIMESTAMP 
-         WHERE id = ?`,
-        [mensaje_id]
-      );
-    } else {
-      await pool.query(
-        `UPDATE soporte_mensajes 
-         SET fecha_actualizacion = CURRENT_TIMESTAMP 
-         WHERE id = ?`,
-        [mensaje_id]
-      );
-    }
+    const nuevoEstado = mensaje[0].estado === 'pendiente' ? 'en_proceso' : mensaje[0].estado;
+    await pool.query(
+      `UPDATE soporte_mensajes 
+       SET estado = ?, fecha_actualizacion = CURRENT_TIMESTAMP 
+       WHERE id = ?`,
+      [nuevoEstado, mensaje_id]
+    );
 
     res.status(201).json({ 
       success: true, 
@@ -499,8 +373,7 @@ router.post('/admin/respuesta', authenticateToken, isModeratorOrAdmin, async (re
       message: 'Respuesta enviada exitosamente' 
     });
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Error al enviar la respuesta' });
+    manejarError(res, error, 'Error al enviar la respuesta');
   }
 });
 
@@ -509,7 +382,7 @@ router.patch('/admin/mensaje/:id/estado', authenticateToken, isModeratorOrAdmin,
   const mensaje_id = req.params.id;
   const { estado } = req.body;
 
-  if (!estado || !['pendiente', 'en_proceso', 'resuelto', 'cerrado'].includes(estado)) {
+  if (!estado || !ESTADOS_VALIDOS.includes(estado)) {
     return res.status(400).json({ error: 'Estado no válido' });
   }
 
@@ -527,8 +400,7 @@ router.patch('/admin/mensaje/:id/estado', authenticateToken, isModeratorOrAdmin,
 
     res.json({ success: true, message: 'Estado actualizado correctamente' });
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Error al actualizar estado' });
+    manejarError(res, error, 'Error al actualizar estado');
   }
 });
 
@@ -537,7 +409,7 @@ router.patch('/admin/mensaje/:id/prioridad', authenticateToken, isModeratorOrAdm
   const mensaje_id = req.params.id;
   const { prioridad } = req.body;
 
-  if (!prioridad || !['baja', 'media', 'alta', 'urgente'].includes(prioridad)) {
+  if (!prioridad || !PRIORIDADES_VALIDAS.includes(prioridad)) {
     return res.status(400).json({ error: 'Prioridad no válida' });
   }
 
@@ -555,8 +427,7 @@ router.patch('/admin/mensaje/:id/prioridad', authenticateToken, isModeratorOrAdm
 
     res.json({ success: true, message: 'Prioridad actualizada correctamente' });
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ error: 'Error al actualizar prioridad' });
+    manejarError(res, error, 'Error al actualizar prioridad');
   }
 });
 

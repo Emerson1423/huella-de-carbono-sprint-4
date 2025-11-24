@@ -103,20 +103,19 @@ export default {
         };
     },
         
-    async mounted() {
-        await this.obtenerPerfil();
-        this.cargarHabitos();
-        window.addEventListener('perfilActualizado', this.onPerfilActualizado);
-        window.addEventListener('userUpdated', this.onPerfilActualizado);
-        window.addEventListener('habitoAgregado', this.onHabitoAgregado);
-    },
-        
-    beforeUnmount() {
-        window.removeEventListener('perfilActualizado', this.onPerfilActualizado);
-        window.removeEventListener('userUpdated', this.onPerfilActualizado);   
-        window.removeEventListener('habitoAgregado', this.onHabitoAgregado);
-    },
-    
+        async mounted() {
+            await this.obtenerPerfil();
+            this.cargarHabitos();
+            globalThis.addEventListener('perfilActualizado', this.onPerfilActualizado);
+            globalThis.addEventListener('userUpdated', this.onPerfilActualizado);
+            globalThis.addEventListener('habitoAgregado', this.onHabitoAgregado);
+        },
+            
+        beforeUnmount() {
+            globalThis.removeEventListener('perfilActualizado', this.onPerfilActualizado);
+            globalThis.removeEventListener('userUpdated', this.onPerfilActualizado);   
+            globalThis.removeEventListener('habitoAgregado', this.onHabitoAgregado);
+        },
     methods: {    
         onPerfilActualizado() {
             this.obtenerPerfil();
@@ -202,7 +201,7 @@ export default {
                 const claveHabitos = `userHabitos_${this.usuarioId}`;
                 localStorage.setItem(claveHabitos, JSON.stringify(this.habitosUsuario));
                 
-                window.dispatchEvent(new CustomEvent('habitoEliminado'));
+                globalThis.dispatchEvent(new CustomEvent('habitoEliminado'));
             }
         },
 

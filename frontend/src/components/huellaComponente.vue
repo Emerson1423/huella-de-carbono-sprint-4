@@ -25,9 +25,10 @@
       
       <!-- Kilómetros recorridos -->
       <div class="form-group">
-        <label>¿Cuántos kilómetros recorres aproximadamente al mes?</label>
+        <label for="kilometros">¿Cuántos kilómetros recorres aproximadamente al mes?</label>
         <input 
           type="range" 
+          id="kilometros"
           min="0" 
           max="1000" 
           step="10" 
@@ -41,8 +42,9 @@
 
       <!-- Medio de transporte -->
       <div class="form-group">
-        <label>¿Principal medio de transporte?</label>
+        <label for="transporte">¿Principal medio de transporte?</label>
         <select 
+          id="transporte"
           v-model="transporte" 
           :class="{ 'error-border': errors.transporte }"
           @change="clearError('transporte')"
@@ -58,66 +60,76 @@
       </div>
 
       <!-- Electricidad -->
-  <div class="form-group">
-    <label>¿Cuánto consumo mensual aparece en tu recibo de luz? (en kWh)</label>
-    <input 
-      type="number" 
-      min="0" 
-      v-model="consumoElectricidad" 
-      placeholder="Ej: 52"
-      @change="clearError('consumoElectricidad')"
-    >
-    <span class="error-message">{{ errors.consumoElectricidad }}</span>
-  </div>
+      <div class="form-group">
+        <label for="consumoElectricidad">¿Cuánto consumo mensual aparece en tu recibo de luz? (en kWh)</label>
+        <input 
+          type="number" 
+          id="consumoElectricidad"
+          min="0" 
+          v-model="consumoElectricidad" 
+          placeholder="Ej: 52"
+          @change="clearError('consumoElectricidad')"
+        >
+        <span class="error-message">{{ errors.consumoElectricidad }}</span>
+      </div>
 
       <!-- Energía renovable -->
       <div class="form-group">
-        <label>¿Usas energía renovable?</label>
-        <div :class="{ 'error-border-group': errors.energiaRenovable }">
-          <input 
-            type="radio" 
-            id="renovablesi" 
-            value="si" 
-            v-model="energiaRenovable"
-            @change="clearError('energiaRenovable')"
-          >
-          <label for="renovablesi">Sí</label>
-          <input 
-            type="radio" 
-            id="renovableno" 
-            value="no" 
-            v-model="energiaRenovable"
-            @change="clearError('energiaRenovable')"
-          >
-          <label for="renovableno">No</label>
-        </div>
+        <fieldset :class="{ 'error-border-group': errors.energiaRenovable }">
+          <legend>¿Usas energía renovable?</legend>
+          <div>
+            <input 
+              type="radio" 
+              id="renovablesi" 
+              value="si" 
+              v-model="energiaRenovable"
+              @change="clearError('energiaRenovable')"
+            >
+            <label for="renovablesi">Sí</label>
+            <input 
+              type="radio" 
+              id="renovableno" 
+              value="no" 
+              v-model="energiaRenovable"
+              @change="clearError('energiaRenovable')"
+            >
+            <label for="renovableno">No</label>
+          </div>
+        </fieldset>
         <span class="error-message">{{ errors.energiaRenovable }}</span>
       </div>
-
       <!-- Reciclaje -->
-      <div class="form-group">
-        <label>¿Qué reciclas? (Selecciona los iconos)</label>
+    <div class="form-group">
+      <fieldset>
+        <legend>¿Qué reciclas? (Selecciona los iconos)</legend>
         <div class="opciones-reciclaje">
-          <div 
+          <button
             v-for="item in reciclajeItems"
             :key="item.id"
             @click="toggleRecycleItem(item.id)"
-            :class="{ 'item-reciclaje': true, 'active': selectedRecycleItems.includes(item.id) }"
+            :class="{
+              'item-reciclaje': true, 
+              'active': selectedRecycleItems.includes(item.id) 
+            }"
             :title="item.name"
+            type="button"
           >
             <img :src="item.icon" :alt="item.name">
             <span>{{ item.name }}</span>
-          </div>
+          </button>
         </div>
-      </div>
+      </fieldset>
+    </div>
 
       <div v-if="errors.reciclaje" class="error-message">
         {{ errors.reciclaje }}
       </div>
+
+    
       <div class="center">  
-      <button @click="calcularHuella" class="filter-btn green">Calcular</button>
+        <button @click="calcularHuella" class="filter-btn green">Calcular</button>
+      </div>
     </div>
-  </div>
 
 </template>
 

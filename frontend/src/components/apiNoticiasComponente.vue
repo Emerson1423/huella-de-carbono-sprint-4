@@ -22,7 +22,7 @@
     <div class="noticias-wrapper">
       <div class="grid">
         <div v-for="noticia in noticiasPaginadas" :key="noticia.url" class="card">
-          <img :src="noticia.urlToImage" alt="Imagen noticia" class="card-img">
+          <img :src="noticia.urlToImage" alt="Noticia" class="card-img">
           <div class="card-content">
             <h2>{{ noticia.title }}</h2>
             <p>{{ noticia.description }}</p>

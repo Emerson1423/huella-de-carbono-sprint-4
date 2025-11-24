@@ -2,43 +2,44 @@
   <navComponente />
 
   <!-- Slideshow  -->
-  <div class="slideshow-container"> 
-    <div class="slide fade">
-      <img src="@/assets/img/slide1.png" alt="Imagen 3">
-      <div class="slide-content">
-        <h2>BIENVENIDO A SALVAMBIENTE</h2>
-        <p>Descubre y concientizate sobre el medio ambiente</p>
-      </div>
-    </div>
-    <div class="slide fade">
-      <img src="@/assets/img/slide2.png" alt="Imagen 0">
-      <div class="slide-content">
-        <h2>SE PARTE DEL CAMBIO</h2>
-        <p>«Vivir de forma sostenible es la mejor manera de proteger el planeta.»</p>
-      </div>
-    </div>  
-    <div class="slide fade">
-      <img src="@/assets/img/slide3.png" alt="Imagen 4">
-      <div class="slide-content">
-        <h2>¡ES TIEMPO DE ACTUAR!</h2>
-        <p>«No podemos seguir ignorando el cambio climático. Es hora de actuar.»</p>
-      </div>
-    </div>
-    <div class="slide fade">
-      <img src="@/assets/img/slide5.png">
-      <div class="slide-content">
-        <h2>MOTIVATE Y REFLEXIONA</h2>
-        <p> «Todos podemos hacer algo para contribuir a la sostenibilidad.»</p>
-      </div>
-    </div>
-    <div class="slide fade">
-      <img src="@/assets/img/slide4.png" alt="Imagen 6">
-      <div class="slide-content">
-        <h2>RECUERDA LAS 3 R</h2>
-        <p>Reciclar es una forma de darle una segunda vida a los materiales.</p>
-      </div>
+<!-- Slideshow  -->
+<div class="slideshow-container"> 
+  <div class="slide fade">
+    <img src="@/assets/img/slide1.png" alt="Bienvenida a Salvambiente">
+    <div class="slide-content">
+      <h2>BIENVENIDO A SALVAMBIENTE</h2>
+      <p>Descubre y concientizate sobre el medio ambiente</p>
     </div>
   </div>
+  <div class="slide fade">
+    <img src="@/assets/img/slide2.png" alt="Sostenibilidad ambiental">
+    <div class="slide-content">
+      <h2>SE PARTE DEL CAMBIO</h2>
+      <p>«Vivir de forma sostenible es la mejor manera de proteger el planeta.»</p>
+    </div>
+  </div>  
+  <div class="slide fade">
+    <img src="@/assets/img/slide3.png" alt="Acción contra el cambio climático">
+    <div class="slide-content">
+      <h2>¡ES TIEMPO DE ACTUAR!</h2>
+      <p>«No podemos seguir ignorando el cambio climático. Es hora de actuar.»</p>
+    </div>
+  </div>
+  <div class="slide fade">
+    <img src="@/assets/img/slide5.png" alt="Motivación para la sostenibilidad">
+    <div class="slide-content">
+      <h2>MOTIVATE Y REFLEXIONA</h2>
+      <p> «Todos podemos hacer algo para contribuir a la sostenibilidad.»</p>
+    </div>
+  </div>
+  <div class="slide fade">
+    <img src="@/assets/img/slide4.png" alt="Las tres R del reciclaje">
+    <div class="slide-content">
+      <h2>RECUERDA LAS 3 R</h2>
+      <p>Reciclar es una forma de darle una segunda vida a los materiales.</p>
+    </div>
+  </div>
+</div>
 
   <div class="contenido-inicio">
     <div class="content">

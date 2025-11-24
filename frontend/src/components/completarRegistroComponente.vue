@@ -111,8 +111,7 @@ export default {
   },
   methods: {
     obtenerTokenTemporal() {
-      // Obtener token temporal de la URL
-      const urlParams = new URLSearchParams(window.location.search);
+      const urlParams = new URLSearchParams(globalThis.location.search);
       this.tempToken = urlParams.get('temp_token');
       
       if (!this.tempToken) {

@@ -20,7 +20,7 @@
       <div class="imagen-contenedor">
         <img 
           :src="tarjeta.imagen" 
-          :alt="tarjeta.alt || 'Imagen ilustrativa'"
+          :alt="tarjeta.alt || 'Ilustración del artículo'"
           class="imagen-tarjeta"
           loading="lazy"
         >
@@ -34,9 +34,9 @@
         <h2 class="modal-titulo">{{ tarjetaActual.titulo }}</h2>
         <img 
           :src="tarjetaActual.imagen" 
-          :alt="tarjetaActual.alt || 'Imagen ilustrativa'"
-          class="modal-imagen" >
-
+          :alt="tarjetaActual.alt || 'Ilustración del artículo'"
+          class="modal-imagen"
+        >
         <div class="modal-texto">
           <p>{{ tarjetaActual.textoCompleto || tarjetaActual.texto }}</p>
           <p v-if="tarjetaActual.enlace" class="modal-fuente">
