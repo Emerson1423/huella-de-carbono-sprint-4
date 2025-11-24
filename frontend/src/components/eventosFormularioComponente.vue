@@ -12,8 +12,9 @@
 
       <!-- Título -->
       <div class="form-group">
-        <label>Título <span class="required">*</span></label>
+        <label for="titulo">Título <span class="required">*</span></label>
         <input 
+          id="titulo"
           type="text" 
           v-model="formulario.titulo"
           @input="validarCampo('titulo')"
@@ -28,8 +29,9 @@
 
       <!-- Descripción -->
       <div class="form-group">
-        <label>Descripción <span class="required">*</span></label>
+        <label for="descripcion">Descripción <span class="required">*</span></label>
         <textarea 
+          id="descripcion"
           v-model="formulario.descripcion"
           @input="validarCampo('descripcion')"
           :class="{ 'input-error': errores.descripcion }"
@@ -45,8 +47,9 @@
       <!-- Fecha y Hora -->
       <div class="form-row">
         <div class="form-group">
-          <label>Fecha <span class="required">*</span></label>
+          <label for="fecha">Fecha <span class="required">*</span></label>
           <input 
+            id="fecha"
             type="date" 
             v-model="formulario.fecha"
             @change="validarCampo('fecha')"
@@ -58,8 +61,9 @@
         </div>
 
         <div class="form-group">
-          <label>Hora <span class="required">*</span></label>
+          <label for="hora">Hora <span class="required">*</span></label>
           <input 
+            id="hora"
             type="time" 
             v-model="formulario.hora"
             required
@@ -69,8 +73,9 @@
 
       <!-- Ubicación -->
       <div class="form-group">
-        <label>Ubicación <span class="required">*</span></label>
+        <label for="ubicacion">Ubicación <span class="required">*</span></label>
         <input 
+          id="ubicacion"
           type="text" 
           v-model="formulario.ubicacion"
           placeholder="Ingrese la ubicación del evento"
@@ -81,8 +86,9 @@
 
       <!-- Categoría -->
       <div class="form-group">
-        <label>Categoría <span class="required">*</span></label>
+        <label for="categoria">Categoría <span class="required">*</span></label>
         <select 
+          id="categoria"
           v-model="formulario.categoria"
           required
         >
@@ -97,8 +103,9 @@
       <h3>Datos del Organizador</h3>
 
       <div class="form-group">
-        <label>Nombre del Organizador <span class="required">*</span></label>
+        <label for="organizador-nombre">Nombre del Organizador <span class="required">*</span></label>
         <input 
+          id="organizador-nombre"
           type="text" 
           v-model="formulario.organizador.nombre"
           placeholder="Nombre completo"
@@ -109,8 +116,9 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label>Email</label>
+          <label for="organizador-email">Email</label>
           <input 
+            id="organizador-email"
             type="email" 
             v-model="formulario.organizador.email"
             placeholder="ejemplo@correo.com"
@@ -118,8 +126,9 @@
         </div>
 
         <div class="form-group">
-          <label>Teléfono</label>
+          <label for="organizador-telefono">Teléfono</label>
           <input 
+            id="organizador-telefono"
             type="tel" 
             v-model="formulario.organizador.telefono"
             placeholder="78901234"
@@ -130,8 +139,9 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label>WhatsApp</label>
+          <label for="organizador-whatsapp">WhatsApp</label>
           <input 
+            id="organizador-whatsapp"
             type="tel" 
             v-model="formulario.organizador.whatsapp"
             placeholder="78901234"
@@ -140,8 +150,9 @@
         </div>
 
         <div class="form-group">
-          <label>Instagram</label>
+          <label for="organizador-instagram">Instagram</label>
           <input 
+            id="organizador-instagram"
             type="text" 
             v-model="formulario.organizador.instagram"
             placeholder="@usuario"
@@ -152,8 +163,9 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label>Facebook</label>
+          <label for="organizador-facebook">Facebook</label>
           <input 
+            id="organizador-facebook"
             type="url" 
             v-model="formulario.organizador.facebook"
             placeholder="https://facebook.com/usuario"
@@ -161,8 +173,9 @@
         </div>
 
         <div class="form-group">
-          <label>Sitio Web</label>
+          <label for="organizador-sitio">Sitio Web</label>
           <input 
+            id="organizador-sitio"
             type="url" 
             v-model="formulario.organizador.sitioWeb"
             placeholder="https://ejemplo.com"
@@ -172,8 +185,9 @@
 
       <!-- Imagen -->
       <div class="form-group">
-        <label>Imagen del Evento</label>
+        <label for="imagen-evento">Imagen del Evento</label>
         <input 
+          id="imagen-evento"
           type="file" 
           @change="handleImagenChange"
           accept="image/jpeg,image/png,image/jpg,image/gif,image/webp"
@@ -186,15 +200,15 @@
         
         <!-- Preview de imagen -->
         <div v-if="imagenPreview" class="image-preview">
-          <img :src="imagenPreview" alt="Preview">
+          <img :src="imagenPreview" alt="Vista previa del evento">
           <button type="button" @click="removerImagen" class="btn-remove-img">×</button>
         </div>
       </div>
 
       <!-- Estado -->
       <div class="form-group">
-        <label>Estado <span class="required">*</span></label>
-        <select v-model="formulario.estado" required>
+        <label for="estado">Estado <span class="required">*</span></label>
+        <select id="estado" v-model="formulario.estado" required>
           <option value="activo">Activo</option>
           <option value="cancelado">Cancelado</option>
           <option value="finalizado">Finalizado</option>
@@ -252,7 +266,7 @@
           </p>
         </div>
 
-        <img v-if="evento.imagen" :src="evento.imagen" alt="Imagen del evento" class="evento-imagen">
+        <img v-if="evento.imagen" :src="evento.imagen" :alt="evento.titulo" class="evento-imagen">
 
         <div class="evento-acciones">
           <button @click="editarEvento(evento)" class="btn-editar">Editar</button>
@@ -432,13 +446,12 @@ export default {
 
       const organizador = { nombre: this.formulario.organizador.nombre };
       const camposExtra = ['email', 'telefono', 'whatsapp', 'facebook', 'instagram', 'sitioWeb', 'otroContacto'];
-      
-      camposExtra.forEach(campo => {
+
+      for (const campo of camposExtra) {
         if (this.formulario.organizador[campo]?.trim()) {
           organizador[campo] = this.formulario.organizador[campo].trim();
         }
-      });
-
+      }
       formData.append('organizador', JSON.stringify(organizador));
 
       if (this.imagenArchivo) {
@@ -611,21 +624,16 @@ export default {
     formatearFecha(fecha) {
       if (!fecha) return 'Fecha no disponible';
       
-      try {
-        let fechaParaProcesar;
+    try {
+        const fechaParaProcesar = new Date(fecha);
         
-        if (fecha._seconds) {
-          fechaParaProcesar = new Date(fecha._seconds * 1000);
-        } else {
-          fechaParaProcesar = new Date(fecha);
-        }
-        
-        if (!isNaN(fechaParaProcesar.getTime())) {
+        if (!Number.isNaN(fechaParaProcesar.getTime())) {
           return fechaParaProcesar.toLocaleDateString('es-ES');
         }
         
         return 'Fecha no disponible';
       } catch (error) {
+        console.error('Error al formatear fecha:', error);
         return 'Fecha no disponible';
       }
     },

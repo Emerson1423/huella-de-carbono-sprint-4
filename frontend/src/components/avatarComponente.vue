@@ -61,11 +61,10 @@ export default {
                 const avatarData = {
                     personajeBase: this.user.personajeBase
                 };
-                localStorage.setItem('avatarPreferencias', JSON.stringify(avatarData));
-                
-     
-                window.dispatchEvent(new Event('storage'));
-                console.log('Avatar guardado:', this.user.personajeBase);
+              localStorage.setItem('avatarPreferencias', JSON.stringify(avatarData));
+
+              globalThis.dispatchEvent(new Event('storage'));
+              console.log('Avatar guardado:', this.user.personajeBase);
                 
             } catch (error) {
                 console.error('Error al cambiar avatar:', error);

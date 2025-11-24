@@ -69,21 +69,21 @@ export default {
     this.initScrollAnimation();
   },
   methods: {
-    initScrollAnimation() {
+initScrollAnimation() {
       const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
+        for (const entry of entries) {
           if (entry.isIntersecting) {
             entry.target.classList.add('is-visible');
           }
-        });
+        }
       }, {
         threshold: 0.1,
         rootMargin: '0px 0px -50px 0px'
       });
-
-      document.querySelectorAll('.animate-on-scroll').forEach(el => {
+      
+      for (const el of document.querySelectorAll('.animate-on-scroll')) {
         observer.observe(el);
-      });
+      }
     }
   }
 }

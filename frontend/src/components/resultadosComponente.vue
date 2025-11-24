@@ -158,7 +158,7 @@ export default {
         const payload = {
           kilometros: this.datosOriginales.kilometros,
           transporte: this.datosOriginales.transporte,
-          electricidad: parseFloat(this.datosOriginales.electricidad),
+          electricidad: Number.parseFloat(this.datosOriginales.electricidad),
           energiaRenovable: this.datosOriginales.energiaRenovable,
           reciclaje: Array.isArray(this.datosOriginales.reciclaje) 
             ? this.datosOriginales.reciclaje 

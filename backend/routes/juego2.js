@@ -67,17 +67,18 @@ const questions = [
 ];
 
     router.get('/questions', (req,res)=>{
+      // NOSONAR - Math.random() es seguro para mezclar preguntas de juego
         const mezclarPreguntas = [...questions].sort(()=> Math.random()- 0.5);
         res.json(mezclarPreguntas);
     });
 
 
-    router.get('/questions/:id', (req,res)=> {
-        const questionId = parseInt(req.params.id);
+    router.get('/questions/:id', (req, res) => {
+        // ✅ CAMBIO: parseInt → Number.parseInt con base 10
+        const questionId = Number.parseInt(req.params.id, 10);
         const question = questions.find(q => q.id === questionId);
-
-        if (!question){
-            return res.status(404).json({ error:'Pregunta no encontrada'});
+        if (!question) {
+            return res.status(404).json({ error: 'Pregunta no encontrada' });
         }
         res.json(question);
     });

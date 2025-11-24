@@ -13,17 +13,19 @@
         </div>
         
         <div class="contenido-visual">
-          <div class="marco-video">
-            <iframe 
-              width="100%" 
-              height="100%"
-              :src="'https://www.youtube.com/embed/' + featuredVideo.id" 
-              frameborder="0" 
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-              allowfullscreen>
-            </iframe>
-          </div>
+        <div class="marco-video">
+          <iframe
+            width="100%"
+            height="100%"
+            :src="'https://www.youtube.com/embed/' + featuredVideo.id"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            :title="'Video: ' + featuredVideo.titulo"
+            style="border: none;"
+          >
+          </iframe>
         </div>
+      </div>
       </div>
     </div>
 

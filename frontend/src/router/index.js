@@ -118,38 +118,30 @@ const routes = [
     component: () => import('../views/juego1View.vue'),
     meta: { requiresAuth: true }
   },
-   {
-    path: '/planta',
-    name: 'planta',
-    component: () => import('../views/juego2View.vue'),
-       meta: { requiresAuth: true }
-  }, 
   {
     path: '/planta',
     name: 'planta',
     component: () => import('../views/juego2View.vue'),
-       meta: { requiresAuth: true }
-
+    meta: { requiresAuth: true }
   }, 
   {
     path: '/dashboard',
     name: 'Dashboard',
     component: () => import('../views/dashboardView.vue'),
-    meta: {roles: ['admin', 'moderador'] } 
+    meta: { roles: ['admin', 'moderador'] } 
   },
-   {
+  {
     path: '/soporte',
     name: 'soporte',
     component: () => import('../views/soporteView.vue'),
     meta: { requiresAuth: true }
   },
-   {
+  {
     path: '/manualComponente',
     name: 'manualComponente',
     component: () => import('../views/ManualUser.vue'),
     meta: { requiresAuth: true }
   },
-
 ];
 
 const router = createRouter({
@@ -157,64 +149,83 @@ const router = createRouter({
   routes
 });
 
-//  Guard mejorado con validación de roles
+// ✅ Función auxiliar consolidada para obtener datos de autenticación
+function obtenerDatosAuth() {
+  const token = localStorage.getItem('token');
+  const usuarioStr = localStorage.getItem('usuario');
+  
+  if (!token) {
+    console.log('No hay token, redirigiendo a login');
+    return { autenticado: false, usuario: null };
+  }
+  
+  if (!usuarioStr) {
+    console.error('No hay usuario en localStorage');
+    return { autenticado: false, usuario: null };
+  }
+  
+  try {
+    const usuario = JSON.parse(usuarioStr);
+    return { autenticado: true, usuario };
+  } catch (error) {
+    console.error('Error al parsear usuario:', error);
+    return { autenticado: false, usuario: null };
+  }
+}
+
+// ✅ Función para verificar permisos de roles
+function verificarPermisos(usuario, rolesPermitidos) {
+  if (!usuario?.rol) {
+    console.error('Usuario no tiene rol');
+    return { permitido: false, mensaje: 'Usuario sin rol asignado' };
+  }
+  
+  console.log('Rol del usuario:', usuario.rol);
+  console.log('Roles permitidos:', rolesPermitidos);
+  
+  if (!rolesPermitidos.includes(usuario.rol)) {
+    console.warn('Acceso denegado: rol insuficiente');
+    const mensaje = `No tienes permisos para acceder a esta página.\nTu rol: ${usuario.rol}\nRoles permitidos: ${rolesPermitidos.join(', ')}`;
+    return { permitido: false, mensaje };
+  }
+  
+  console.log('Acceso permitido');
+  return { permitido: true };
+}
+
+// ✅ Guard simplificado y optimizado
 router.beforeEach((to, from, next) => {
   console.log('Navegando a:', to.path);
   
-  // Verificar si la ruta requiere autenticación
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    const token = localStorage.getItem('token');
+  const requiereAuth = to.matched.some(record => record.meta.requiresAuth);
+  const requiereRoles = to.meta.roles?.length > 0;
+  
+  // Rutas públicas
+  if (!requiereAuth && !requiereRoles) {
+    next();
+    return;
+  }
+  
+  // Verificar autenticación
+  const { autenticado, usuario } = obtenerDatosAuth();
+  
+  if (!autenticado) {
+    next('/login');
+    return;
+  }
+  
+  // Verificar roles si es necesario
+  if (requiereRoles) {
+    const { permitido, mensaje } = verificarPermisos(usuario, to.meta.roles);
     
-    if (!token) {
-      console.log(' No hay token, redirigiendo a login');
-      next('/login');
+    if (!permitido) {
+      if (mensaje) alert(mensaje);
+      next('/');
       return;
     }
-
-    // Verificar roles si la ruta los requiere
-    if (to.meta.roles && to.meta.roles.length > 0) {
-      try {
-        const usuarioStr = localStorage.getItem('usuario');
-        console.log('Usuario en localStorage:', usuarioStr);
-        
-        if (!usuarioStr) {
-          console.error('No hay usuario en localStorage');
-          next('/login');
-          return;
-        }
-        
-        const usuario = JSON.parse(usuarioStr);
-        console.log('Usuario parseado:', usuario);
-        
-        if (!usuario || !usuario.rol) {
-          console.error('Usuario no tiene rol');
-          next('/login');
-          return;
-        }
-
-        console.log(' Rol del usuario:', usuario.rol);
-        console.log('Roles permitidos:', to.meta.roles);
-
-        // Verificar si el rol del usuario está en los roles permitidos
-        if (!to.meta.roles.includes(usuario.rol)) {
-          console.warn('Acceso denegado: rol insuficiente');
-          alert(`No tienes permisos para acceder a esta página.\nTu rol: ${usuario.rol}\nRoles permitidos: ${to.meta.roles.join(', ')}`);
-          next('/');
-          return;
-        }
-        
-        console.log('Acceso permitido al dashboard');
-      } catch (error) {
-        console.error('Error al verificar roles:', error);
-        next('/login');
-        return;
-      }
-    }
-
-    next();
-  } else {
-    next();
   }
+  
+  next();
 });
 
 export default router;

@@ -192,12 +192,6 @@ button:disabled {
   text-decoration: underline;
 }
 
-.error {
-  color: #ff4444;
-  margin-top: 10px;
-  text-align: center;
-}
-
 .error-text {
   color: #ff4444;
   font-size: 0.8rem;

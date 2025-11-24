@@ -64,10 +64,9 @@ export default {
 .stats-panel h2 {
    margin-top: 0;
    color: #333;
-   margin-top: 0;
    margin-bottom: 20px;
    border-bottom: 2px solid #e0e0e0;
-   margin-top: 0;
+
 }
 
 .stats-panel ul {

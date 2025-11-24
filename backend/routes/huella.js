@@ -30,10 +30,10 @@ router.get('/puede-calcular', authenticateToken, async (req, res) => {
       const fechaUltimoCalculo = rows[0].fecha;
       const proximoMes = new Date(fechaUltimoCalculo);
       proximoMes.setMonth(proximoMes.getMonth() + 1);
-      proximoMes.setDate(1); // Primer día del próximo mes
-      
-      const diasRestantes = Math.ceil((proximoMes - new Date()) / (1000 * 60 * 60 * 24));
-      
+      proximoMes.setDate(1);
+
+      const diasRestantes = Math.ceil((proximoMes - Date.now()) / (1000 * 60 * 60 * 24));
+
       return res.json({
         puede_calcular: false,
         mensaje: `Ya realizaste tu cálculo este mes el ${fechaUltimoCalculo.toLocaleDateString('es-ES')}`,
@@ -83,11 +83,13 @@ router.post('/guardar', authenticateToken, async (req, res) => {
     // Si no existe, continuar con el código original de guardado...
     const { kilometros, transporte, electricidad, energiaRenovable, reciclaje, total_emisiones } = req.body;
 
-    const kilometrosNum = parseFloat(kilometros);
-    const electricidadNum = parseFloat(electricidad);
-    const totalEmisionesNum = parseFloat(total_emisiones);
 
-    if (isNaN(kilometrosNum) || isNaN(electricidadNum) || isNaN(totalEmisionesNum)) {
+    const kilometrosNum = Number.parseFloat(kilometros);
+    const electricidadNum = Number.parseFloat(electricidad);
+    const totalEmisionesNum = Number.parseFloat(total_emisiones);
+
+   
+    if (Number.isNaN(kilometrosNum) || Number.isNaN(electricidadNum) || Number.isNaN(totalEmisionesNum)) {
       conn.release();
       return res.status(400).json({ 
         error: "Datos numéricos inválidos",
@@ -100,11 +102,13 @@ router.post('/guardar', authenticateToken, async (req, res) => {
       return res.status(400).json({ error: "energiaRenovable debe ser 'si' o 'no'" });
     }
 
-    let reciclajeValue = Array.isArray(reciclaje) 
-      ? reciclaje.filter(item => item && item !== 'no_reciclo').join(',')
-      : (reciclaje === 'no_reciclo' ? '' : reciclaje);
+    let reciclajeValue;
+    if (Array.isArray(reciclaje)) {
+      reciclajeValue = reciclaje.filter(item => item && item !== 'no_reciclo').join(',');
+    } else {
+      reciclajeValue = reciclaje === 'no_reciclo' ? '' : reciclaje;
+    }
     reciclajeValue = reciclajeValue || 'no_reciclo';
-
     // Continuar con transacción
     await conn.beginTransaction();
 
@@ -159,6 +163,7 @@ router.get('/historial', authenticateToken, async (req, res) => {
 
     try {
       // Obtener cálculos con paginación
+
       const [calculos] = await conn.query(`
         SELECT 
           h.id,
@@ -176,7 +181,7 @@ router.get('/historial', authenticateToken, async (req, res) => {
         WHERE p.id_usuario = ? 
         ORDER BY h.fecha DESC 
         LIMIT ? OFFSET ?
-      `, [req.user.id, parseInt(limit), offset]);
+      `, [req.user.id, Number.parseInt(limit, 10), offset]);
 
       // Total de registros
       const [totalCount] = await conn.query(`
@@ -212,14 +217,15 @@ router.get('/historial', authenticateToken, async (req, res) => {
         };
       });
 
+      
       res.json({
         success: true,
         data: calculosFormateados,
         pagination: {
-          currentPage: parseInt(page),
+          currentPage: Number.parseInt(page, 10),
           totalPages: totalPages,
           totalItems: total,
-          itemsPerPage: parseInt(limit),
+          itemsPerPage: Number.parseInt(limit, 10),
           hasNextPage: page < totalPages,
           hasPrevPage: page > 1
         }

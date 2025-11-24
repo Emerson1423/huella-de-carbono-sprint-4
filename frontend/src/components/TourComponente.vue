@@ -45,7 +45,8 @@ export default {
     isUserAuthenticated() {
       try {
         return this.isAuthenticated || (!!localStorage.getItem('token') && !!localStorage.getItem('usuario'));
-      } catch (e) {
+      } catch (error) {
+        console.error('Error al verificar autenticación:', error);
         return this.isAuthenticated;
       }
     }

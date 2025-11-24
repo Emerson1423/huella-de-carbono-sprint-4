@@ -32,7 +32,9 @@
     <div v-if="activeTab === 'faq'" class="faq-section">
       <div class="search-box">
         <i class="fas fa-search"></i>
+        <label for="search-faq" class="sr-only">Buscar en preguntas frecuentes</label>
         <input 
+          id="search-faq"
           v-model="searchQuery" 
           type="text" 
           placeholder="Buscar en preguntas frecuentes...">
@@ -96,8 +98,8 @@
         </div>
 
         <div class="form-group">
-          <label>Categoría del Mensaje *</label>
-          <select v-model="formulario.categoria_id" required>
+          <label for="categoria-mensaje">Categoría del Mensaje *</label>
+          <select id="categoria-mensaje" v-model="formulario.categoria_id" required>
             <option value="">Selecciona una categoría</option>
             <option 
               v-for="cat in categorias" 
@@ -109,8 +111,9 @@
         </div>
 
         <div class="form-group">
-          <label>Asunto *</label>
+          <label for="asunto-mensaje">Asunto *</label>
           <input 
+            id="asunto-mensaje"
             v-model="formulario.asunto" 
             type="text" 
             placeholder="Resumen breve de tu consulta"
@@ -120,8 +123,9 @@
         </div>
 
         <div class="form-group">
-          <label>Mensaje *</label>
+          <label for="mensaje-contenido">Mensaje *</label>
           <textarea 
+            id="mensaje-contenido"
             v-model="formulario.mensaje" 
             rows="6"
             placeholder="Describe tu problema, pregunta o sugerencia con el mayor detalle posible..."
@@ -613,6 +617,18 @@ export default {
 
 <style scoped>
 @import '../Style.css';
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
 
 .soporte-container {
   max-width: 1400px;

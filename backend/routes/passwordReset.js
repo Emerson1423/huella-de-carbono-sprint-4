@@ -4,6 +4,7 @@ const pool = require('../bd');
 const bcrypt = require('bcrypt');
 const transporter = require('../config/mailer');
 const router = express.Router();
+const crypto = require('node:crypto');
 
 const resetTokens = {};
 
@@ -18,7 +19,7 @@ router.post('/solicitar-restablecimiento', async (req, res) => { // Endpoint par
     }
     
     // Generar código de 6 dígitos
-    const codigo = Math.floor(100000 + Math.random() * 900000).toString();
+    const codigo = crypto.randomInt(100000, 1000000).toString();
     resetTokens[codigo] = {correo, expires: Date.now() + 1000 * 60 * 15, // 15 minutos
       verified: false // Marca si el código ha sido verificado
     };

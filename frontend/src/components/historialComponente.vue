@@ -172,22 +172,6 @@ export default {
 .stats-panel h2 {
   margin-bottom: .5rem;
 }
-.lista-registros {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-.registro-item {
-  border: 1px solid #ddd;
-  padding: 1rem;
-  border-radius: 10px;
-  background: #fff;
-}
-.registro-header {
-  display: flex;
-  justify-content: space-between;
-  font-weight: bold;
-}
 .nivel.baja { color: green; }
 .nivel.media { color: orange; }
 .nivel.alta { color: red; }

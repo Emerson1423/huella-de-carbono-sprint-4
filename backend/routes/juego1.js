@@ -9,21 +9,19 @@ router.post('/puntuacion', async (req, res) => {
 
     await pool.execute(
       `DELETE FROM puntuaciones_juego1 WHERE usuario_id = ?`,
-      [usuario_id]
+    [usuario_id]
     );
 
-    
-    const [result] = await pool.execute(
+    await pool.execute(
       `INSERT INTO puntuaciones_juego1 
-       (usuario_id, puntuacion, tiempo_segundos, eficiencia, aciertos, total_residuos, fecha_juego) 
-       VALUES (?, ?, ?, ?, ?, ?, NOW())`,
+      (usuario_id, puntuacion, tiempo_segundos, eficiencia, aciertos, total_residuos, fecha_juego) 
+      VALUES (?, ?, ?, ?, ?, ?, NOW())`,
       [usuario_id, puntuacion, tiempo_segundos, eficiencia, aciertos, total_residuos]
     );
 
     res.json({ 
       success: true, 
       message: 'Puntuación guardada correctamente',
-      action: 'created'
     });
 
   } catch (error) {

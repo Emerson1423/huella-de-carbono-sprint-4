@@ -154,7 +154,9 @@ export default {
     await this.cargarDatos();
   },
   beforeUnmount() {
-    Object.values(this.charts).forEach(chart => chart?.destroy());
+    for (const chart of Object.values(this.charts)) {
+      chart?.destroy();
+    }
   },
   methods: {
     cargarUsuario() {
@@ -279,7 +281,7 @@ export default {
           labels: datos.map(d => d.transporte),
           datasets: [{
             label: 'Emisiones (kg CO₂)',
-            data: datos.map(d => parseFloat(d.promedio_emisiones)),
+            data: datos.map(d => Number.parseFloat(d.promedio_emisiones)),
             backgroundColor: '#FF9800'
           }]
         },
@@ -303,7 +305,7 @@ export default {
           labels: datos.map(d => d.mes),
           datasets: [{
             label: 'Emisiones Promedio',
-            data: datos.map(d => parseFloat(d.promedio_emisiones)),
+            data: datos.map(d => Number.parseFloat(d.promedio_emisiones)),
             borderColor: '#F44336',
             backgroundColor: 'rgba(244, 67, 54, 0.1)',
             tension: 0.4,

@@ -107,8 +107,8 @@ async handleSubmit() {
     console.log('✅ Usuario guardado:', response.data.usuario);
 
     // Disparar evento para actualizar navbar
-    window.dispatchEvent(new Event('authStateChanged'));
-    
+   globalThis.dispatchEvent(new Event('authStateChanged'));
+
     console.log('🏠 Redirigiendo a home...');
     
     // Redirigir

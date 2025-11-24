@@ -31,13 +31,14 @@
     background: #e53935;
     color: #ffffff;
 }
-.filter-btn:hover { background: #164c18; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3); }
-.filter-btn.gray:hover { background: #4b4e50; }
 
-.filter-btn:hover {
-  transform: translateY(-3px);
+.filter-btn:hover { 
+  background: #164c18; 
+  transform: translateY(-3px);  /* Combinar ambas transformaciones */
   box-shadow: 0 6px 12px rgba(63, 43, 43, 0.15);
 }
+.filter-btn.gray:hover { background: #4b4e50; }
+
 
 .filter-btn.active {
   background-color: #8bc34a9a;

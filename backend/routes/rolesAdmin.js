@@ -1,12 +1,10 @@
 
+
 const express = require('express');
 const pool = require('../bd');
 const authenticateToken = require('../middleware/auth');
 const { checkRole, isAdmin } = require('../middleware/roleAuth');
 const router = express.Router();
-
-
-
 
 router.get('/admin/usuarios', authenticateToken, isAdmin, async (req, res) => {
   try {
@@ -33,7 +31,8 @@ router.put('/admin/usuarios/:id/rol', authenticateToken, isAdmin, async (req, re
       return res.status(400).json({ error: 'Rol no válido' });
     }
 
-    if (parseInt(id) === req.user.id) {
+
+    if (Number.parseInt(id, 10) === req.user.id) {
       const [usuarioActual] = await pool.query('SELECT rol_id FROM usuarios WHERE id = ?', [id]);
       const [rolAdmin] = await pool.query('SELECT id FROM roles WHERE nombre = ?', ['admin']);
       
@@ -76,7 +75,8 @@ router.delete('/admin/usuarios/:id', authenticateToken, isAdmin, async (req, res
   const { id } = req.params;
   
   try {
-    if (parseInt(id) === req.user.id) {
+
+    if (Number.parseInt(id, 10) === req.user.id) {
       return res.status(400).json({ error: 'No puedes eliminar tu propia cuenta' });
     }
 

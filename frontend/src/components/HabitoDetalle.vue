@@ -165,11 +165,11 @@ export default {
 
   // Navegación con teclado
   mounted() {
-    window.addEventListener('keydown', this.manejarTeclas);
+   globalThis.addEventListener('keydown', this.manejarTeclas);
   },
 
   beforeUnmount() {
-    window.removeEventListener('keydown', this.manejarTeclas);
+   globalThis.removeEventListener('keydown', this.manejarTeclas);
   }, 
   
   //cambio aqui
@@ -378,10 +378,7 @@ methods: {
   gap: 8px;
 }
 
-.icono-habitos {
-  width: 40px;
-  height: auto;
-}
+
 
 .explicacion-completa h3,
 .beneficios-section h3,
@@ -464,6 +461,7 @@ methods: {
   height: 120px;
   margin-bottom: 80px;
 }
+
 
 /* Texto de explicación completa */
 .explicacion-completa p {
