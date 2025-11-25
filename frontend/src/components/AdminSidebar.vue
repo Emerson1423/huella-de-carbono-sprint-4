@@ -1,7 +1,7 @@
 <template>
   <aside class="sidebar">
     <div class="sidebar-header">
-      <h2>🎯 Admin Panel</h2>
+      <h2>Admin Panel</h2>
       <p class="user-info">{{ usuario.usuario }}</p>
       <span class="rol-badge" :class="usuario.rol">{{ usuario.rol }}</span>
     </div>
@@ -13,18 +13,22 @@
         @click="$emit('cambiar-seccion', item.id)"
         :class="['nav-item', { active: seccionActual === item.id }]"
       >
-        <span class="nav-icon">{{ item.icon }}</span>
+        <img :src="item.icon" :alt="item.label" class="nav-icon" />
         <span class="nav-text">{{ item.label }}</span>
       </button>
     </nav>
 
     <button @click="$emit('cerrar-sesion')" class="btn-logout">
-      🚪 Cerrar Sesión
+      Cerrar Sesión
     </button>
   </aside>
 </template>
 
 <script>
+import dashboardIcono from '@/assets/icons/dashboard.png'
+import preguntasIcono from '@/assets/icons/preguntas.png'
+import eventosIcono from '@/assets/icons/eventos.png'
+import usuariosIcono from '@/assets/icons/usuarios.png'
 export default {
   name: 'AdminSidebar',
   props: {
@@ -47,16 +51,16 @@ export default {
     },
     menuItems() {
       const items = [
-        { id: 'dashboard', icon: '📊', label: 'Dashboard' },
-        { id: 'preguntas', icon: '❓', label: 'Preguntas' }
+        { id: 'dashboard', icon: dashboardIcono, label: 'Dashboard' },
+        { id: 'preguntas', icon: preguntasIcono, label: 'Preguntas' }
       ];
       
       if (this.esAdmin || this.esMod) {
-        items.push({ id: 'eventos', icon: '📅', label: 'Eventos' });
+        items.push({ id: 'eventos', icon: eventosIcono, label: 'Eventos' });
       }
       
       if (this.esAdmin) {
-        items.push({ id: 'usuarios', icon: '👥', label: 'Usuarios' });
+        items.push({ id: 'usuarios', icon: usuariosIcono, label: 'Usuarios' });
       }
       
       return items;
@@ -68,7 +72,7 @@ export default {
 <style scoped>
 .sidebar {
   width: 260px;
-  background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+  background-color:#4caf50;
   color: white;
   display: flex;
   flex-direction: column;
@@ -79,12 +83,13 @@ export default {
 
 .sidebar-header {
   padding: 2rem 1.5rem;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-header h2 {
   margin-bottom: 0.5rem;
   font-size: 1.5rem;
+  color: white;
 }
 
 .user-info {
@@ -146,13 +151,17 @@ export default {
 }
 
 .nav-icon {
-  font-size: 1.25rem;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+
+
 }
 
 .btn-logout {
   margin: 1rem;
   padding: 1rem;
-  background: rgba(231, 76, 60, 0.2);
+  background: rgb(255, 25, 0);
   border: 1px solid #e74c3c;
   color: white;
   border-radius: 8px;
@@ -162,7 +171,7 @@ export default {
 }
 
 .btn-logout:hover {
-  background: #e74c3c;
+  background: #bc5349;
 }
 
 @media (max-width: 1024px) {

@@ -2,14 +2,15 @@
   <div class="dashboard-container">
     <!-- Header del Dashboard -->
     <div class="dashboard-header">
-      <h1>🎯 Panel de Administración</h1>
+      <h1>Panel de Administración</h1>
       <p class="subtitle">Bienvenido, <strong>{{ usuario.usuario }}</strong> - Rol: <span class="rol-badge">{{ usuario.rol }}</span></p>
     </div>
 
     <!-- Tarjetas de Resumen -->
     <div class="stats-grid" v-if="resumen">
       <div class="stat-card usuarios">
-        <div class="stat-icon">👥</div>
+        <div class="stat-icon">
+          <img :src="usuariosIcono"  class="nav-icon" /></div>
         <div class="stat-content">
           <h3>{{ resumen.usuarios?.total || 0 }}</h3>
           <p>Usuarios Totales</p>
@@ -18,7 +19,9 @@
       </div>
 
       <div class="stat-card huella">
-        <div class="stat-icon">🌱</div>
+        <div class="stat-icon">
+          <img :src="huellaIcono"  class="nav-icon" />
+        </div>
         <div class="stat-content">
           <h3>{{ resumen.huellaCarbono?.total || 0 }}</h3>
           <p>Huellas Calculadas</p>
@@ -27,7 +30,9 @@
       </div>
 
       <div class="stat-card juegos">
-        <div class="stat-icon">🎮</div>
+        <div class="stat-icon">
+           <img :src="juegosIcono"  class="nav-icon" />
+        </div>
         <div class="stat-content">
           <h3>{{ resumen.juegos?.totalPartidas || 0 }}</h3>
           <p>Partidas Jugadas</p>
@@ -36,7 +41,9 @@
       </div>
 
       <div class="stat-card actividad">
-        <div class="stat-icon">📊</div>
+        <div class="stat-icon">
+           <img :src="actividadIcono"  class="nav-icon" />
+        </div>
         <div class="stat-content">
           <h3>{{ actividadTotal }}</h3>
           <p>Actividad Total</p>
@@ -49,25 +56,25 @@
     <div class="charts-grid">
       <!-- Gráfico 1: Usuarios por mes -->
       <div class="chart-card">
-        <h3>📈 Usuarios Registrados (Últimos 6 meses)</h3>
+        <h3>Usuarios Registrados (Últimos 6 meses)</h3>
         <canvas ref="usuariosMesChart"></canvas>
       </div>
 
       <!-- Gráfico 2: Distribución de roles -->
       <div class="chart-card">
-        <h3>👥 Distribución por Rol</h3>
+        <h3>Distribución por Rol</h3>
         <canvas ref="rolesChart"></canvas>
       </div>
 
       <!-- Gráfico 3: Emisiones por transporte -->
       <div class="chart-card">
-        <h3>🚗 Emisiones por Transporte</h3>
+        <h3>Emisiones por Transporte</h3>
         <canvas ref="transporteChart"></canvas>
       </div>
 
       <!-- Gráfico 4: Tendencia de emisiones -->
       <div class="chart-card">
-        <h3>📉 Tendencia de Emisiones CO₂</h3>
+        <h3>Tendencia de Emisiones CO₂</h3>
         <canvas ref="tendenciaChart"></canvas>
       </div>
     </div>
@@ -76,7 +83,7 @@
     <div class="bottom-grid">
       <!-- Top 5 Jugadores -->
       <div class="table-card">
-        <h3>🏆 Top 5 Jugadores</h3>
+        <h3>Top 5 Jugadores</h3>
         <table v-if="resumen.juegos?.topJugadores?.length > 0">
           <thead>
             <tr>
@@ -100,11 +107,11 @@
 
       <!-- Actividad Reciente -->
       <div class="table-card">
-        <h3>⚡ Actividad Reciente</h3>
+        <h3> Actividad Reciente</h3>
         <div class="activity-list" v-if="actividadReciente.length > 0">
           <div v-for="item in actividadReciente" :key="item.id" class="activity-item">
             <span class="activity-icon" :class="item.tipo">
-              {{ getActivityIcon(item.tipo) }}
+              <img :src="getActivityIcon(item.tipo)" :alt="item.tipo" class="activity-icon-img" />
             </span>
             <div class="activity-content">
               <p><strong>{{ item.usuario }}</strong> {{ getActivityText(item) }}</p>
@@ -119,10 +126,10 @@
     <!-- Botones de Acción -->
     <div class="action-buttons">
       <router-link to="/admin/usuarios" class="btn-primary">
-        👥 Gestionar Usuarios
+        Gestionar Usuarios
       </router-link>
       <router-link to="/eventos" class="btn-secondary">
-        📅 Ver Eventos
+        Ver Eventos
       </router-link>
     </div>
   </div>
@@ -130,6 +137,11 @@
 
 <script>
 import { Chart, registerables } from 'chart.js';
+import usuariosIcono from '@/assets/icons/usuarios.png'
+import huellaIcono from '@/assets/icons/huellas.png'
+import juegosIcono from '@/assets/icons/juegos.png'
+import actividadIcono from '@/assets/icons/actividad.png'
+import registroIcono from '@/assets/icons/registro.png'
 Chart.register(...registerables);
 
 export default {
@@ -139,7 +151,12 @@ export default {
       usuario: {},
       resumen: {},
       actividadReciente: [],
-      charts: {}
+      charts: {},
+      usuariosIcono,
+      huellaIcono,
+      juegosIcono,
+      actividadIcono,
+      registroIcono,
     };
   },
   computed: {
@@ -321,8 +338,12 @@ export default {
     },
 
     getActivityIcon(tipo) {
-      const icons = { registro: '👤', huella: '🌱', juego: '🎮' };
-      return icons[tipo] || '📌';
+      const icons = { 
+        registro: this.registroIcono, 
+        huella: this.huellaIcono, 
+        juego: this.juegosIcono
+      };
+      return icons[tipo] || this.actividadIcon;
     },
 
     getActivityText(item) {
@@ -402,13 +423,18 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
 }
 
 .stat-card.usuarios .stat-icon { background: rgba(76, 175, 80, 0.1); }
 .stat-card.huella .stat-icon { background: rgba(76, 175, 80, 0.15); }
 .stat-card.juegos .stat-icon { background: rgba(33, 150, 243, 0.1); }
 .stat-card.actividad .stat-icon { background: rgba(255, 152, 0, 0.1); }
+
+.nav-icon {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
 
 .stat-content h3 {
   margin: 0;
@@ -519,6 +545,11 @@ th {
   align-items: center;
   justify-content: center;
   font-size: 1.25rem;
+}
+.activity-icon-img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
 }
 
 .activity-icon.registro { background: rgba(33, 150, 243, 0.1); }
