@@ -39,30 +39,38 @@
           class="bote"
           :data-type="bote.type"
           @dragover.prevent
-          @drop="manejarSuelta(bote.type)">
+          @drop="manejarSuelta(bote.type, $event)">
           <img :src="bote.imagen" :alt="bote.nombre">
         </div>
       </div>
       
-       <div class="basura-container">
+      <div class="basura-container">
         <div class="current-item" :class="{ 'correct': feedback.correcto, 'wrong': feedback.incorrecto }">
           <img
             v-if="itemActual"
             :src="itemActual.src"
-            :alt="itemActual.nombre || itemActual.id || 'Item para reciclar'"
-            :id="itemActual.id"
+            :alt="itemActual.nombre"
             class="basura-item"
             draggable="true"
             :data-type="itemActual.type"
             @dragstart="inicioArrastre"
+            @touchstart="inicioToqueArrastre"
+            @touchmove="moverToqueArrastre"
+            @touchend="finToqueArrastre"
           >
         </div>
       </div>
 
+      <!-- arrastre móvil -->
+      <img
+        v-if="arrastrando && esDispositilMovil && posicionArrastre.x > 0"
+        :src="itemActual.src"
+        class="fantasma-arrastre"
+        :style="estiloFantasma">
+         
       <div class="message-area">
         <p :class="messageClass">{{ mensaje }}</p>
       </div>
-      
     </div>
 
     <!-- Modal de Guía -->
@@ -94,7 +102,7 @@
       </div>
     </div>
 
-    <!-- Modal de juego Terminado (por agotar intentos) -->
+    <!-- Modal de juego Terminado -->
     <div v-if="juegoTerminado" class="modal-overlay">
       <div class="modal-content">
         <h2>¡Se agotaron los intentos!</h2>
@@ -202,7 +210,6 @@
 
 <script>
 import LeaderboardGame1 from '@/components/leaderboard-Game1.vue';
-// Importar las imágenes
 import bananoImg from '@/assets/img/BAN.png'
 import cartonImg from '@/assets/img/CARTON.png'
 import botellaImg from '@/assets/img/BOTELLA.png'
@@ -215,7 +222,6 @@ import plasticoImg from '@/assets/img/boteAmarillo.png'
 import vidrioImg from '@/assets/img/boteVerde.png'
 import toxicoImg from '@/assets/img/boteRojo.png'
 import comunImg from '@/assets/img/boteNegro.png'
-
 import axios from 'axios'
 
 export default {
@@ -240,7 +246,9 @@ export default {
       leaderboard: [],
       usuarioLogueado: false,
       usuarioActual: null,
-   
+      esDispositilMovil: false,
+      arrastrando: false,
+      posicionArrastre: { x: 0, y: 0 },
       feedback: {
         correcto: false,
         incorrecto: false
@@ -322,9 +330,19 @@ export default {
       const minutos = Math.floor(this.tiempoTranscurrido / 60);
       const segundos = this.tiempoTranscurrido % 60;
       return `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+    },
+    estiloFantasma() {
+      return {
+        left: `${this.posicionArrastre.x - 35}px`,
+        top: `${this.posicionArrastre.y - 35}px`,
+      };
     }
   },
   methods: {
+    detectarDispositivo() {
+      this.esDispositilMovil = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    },
+
     verificarAutenticacion() {
       const token = localStorage.getItem('token');
       const usuario = localStorage.getItem('usuario');
@@ -338,7 +356,6 @@ export default {
       }
     },
     
-    // Vuelve a la pantalla inicial
     volverAlInicio() {
       this.juegoActivo = false;
       this.juegoTerminado = false;
@@ -348,7 +365,6 @@ export default {
       this.cargarLeaderboard();
     },
 
-    // Reintenta juego
     reintentarJuego() {
       this.reiniciarJuego();
       this.mostrarModalInfo = true;
@@ -356,8 +372,8 @@ export default {
 
     empezarJuego() {
       this.verificarAutenticacion();
-      // Reiniciar el estado del juego antes de comenzar para evitar valores residuales
-      if (typeof this.reiniciarJuego === 'function') this.reiniciarJuego();
+      this.detectarDispositivo();
+      this.reiniciarJuego();
       this.mostrarModalInfo = false;
       this.juegoActivo = true;
       this.iniciarTemporizador();
@@ -381,7 +397,7 @@ export default {
       event.dataTransfer.setData("text", this.itemActual.type);
     },
     
-    manejarSuelta(tipoBote) {
+    manejarSuelta(tipoBote, event) {
       const basuraType = event.dataTransfer.getData("text");
       
       if (basuraType === tipoBote) {
@@ -398,6 +414,66 @@ export default {
         this.mensaje = `¡Intenta de nuevo! Intentos restantes: ${this.intentosRestantes}`;
         this.feedback.incorrecto = true;
         
+        this.arrastrando = false;
+        this.posicionArrastre = { x: -100, y: -100 };
+        
+        setTimeout(() => {
+          this.feedback.incorrecto = false;
+          
+          if (this.intentosRestantes <= 0) {
+            this.terminarJuego();
+          }
+        }, 1000);
+      }
+    },
+
+    // agregado: arrastre en movil
+    inicioToqueArrastre(event) {
+      if (!this.esDispositilMovil) return;
+      event.preventDefault();
+      this.arrastrando = true;
+    },
+
+    moverToqueArrastre(event) {
+      if (!this.arrastrando || !this.esDispositilMovil) return;
+      event.preventDefault();
+      const touch = event.touches[0];
+      this.posicionArrastre = { x: touch.clientX, y: touch.clientY };
+    },
+
+    finToqueArrastre(event) {
+      if (!this.esDispositilMovil) return;
+      this.arrastrando = false;
+
+      this.posicionArrastre = { x: -100, y: -100 };
+      
+      const touch = event.changedTouches[0];
+      const elementos = document.elementsFromPoint(touch.clientX, touch.clientY);
+      const boteElement = elementos.find(el => el.classList.contains('bote'));
+      
+      if (boteElement) {
+        const tipoBote = boteElement.dataset.type;
+        this.verificarReciclaje(this.itemActual.type, tipoBote);
+      }
+    },
+
+    verificarReciclaje(basuraType, tipoBote) {
+      if (basuraType === tipoBote) {
+        this.mensaje = "¡Correcto! Bien reciclado";
+        this.feedback.correcto = true;
+        this.aciertos++;
+        
+        setTimeout(() => {
+          this.feedback.correcto = false;
+          this.siguienteItem();
+        }, 1000);
+      } else {
+        this.intentosRestantes--;
+        this.mensaje = `¡Intenta de nuevo! Intentos restantes: ${this.intentosRestantes}`;
+        this.feedback.incorrecto = true;
+        this.arrastrando = false;
+        this.posicionArrastre = { x: -100, y: -100 };
+        
         setTimeout(() => {
           this.feedback.incorrecto = false;
           
@@ -411,6 +487,8 @@ export default {
     siguienteItem() {
       this.currentIndex++;
       this.mensaje = "";
+      this.arrastrando = false;
+      this.posicionArrastre = { x: -100, y: -100 };
       
       if (this.currentIndex >= this.basuraItems.length) {
         this.detenerTemporizador();
@@ -435,6 +513,8 @@ export default {
       this.intentosRestantes = 3;
       this.feedback.correcto = false;
       this.feedback.incorrecto = false;
+      this.arrastrando = false;
+      this.posicionArrastre = { x: -100, y: -100 };
       this.basuraItems = [...this.basuraItems].sort(() => Math.random() - 0.5);
       this.detenerTemporizador();
     },
@@ -483,6 +563,7 @@ export default {
     }
   },
   mounted() {
+    this.detectarDispositivo();
     this.verificarAutenticacion();
     this.basuraItems = [...this.basuraItems].sort(() => Math.random() - 0.5);
     this.cargarLeaderboard();
@@ -491,7 +572,6 @@ export default {
 </script>
 
 <style scoped>
-
 .modal-close-btn {
   position: absolute;
   top: 15px;
@@ -505,24 +585,18 @@ export default {
 }
 .modal-close-btn:hover{
   color: #e74c3c;
-
 }
 .leaderboard-modal {
   max-width: 600px;
 }
-
 .leaderboard-container {
   margin: 20px 0;
   max-height: 400px;
   overflow-y: auto;
 }
-
-
-
 .modal-content h2 {
   padding-right: 40px; 
 }
-
 .game-container {
   max-width: 95%;
   margin: 100px auto 20px;
@@ -533,7 +607,6 @@ export default {
   font-family: 'Poppins', sans-serif;
   text-align: center;
 }
-
 h1 {
   color: #2E7D32;
   margin-bottom: 10px;
@@ -542,35 +615,28 @@ h1 {
 }
 .nombre-game{
   font-size: 28px;
-  
 }
-
 .initial-screen {
   padding: 20px 0;
 }
-
 .welcome-section {
   margin-bottom: 30px;
 }
-
 .welcome-section h2 {
   color: #2E7D32;
   margin-bottom: 10px;
 }
-
 .welcome-section p {
   color: #666;
   margin-bottom: 25px;
   font-size: 1.1rem;
 }
-
 .initial-actions {
   display: flex;
   justify-content: center;
   gap: 15px;
   margin: 25px 0;
 }
-
 .btn-start-main {
   background: #4CAF50;
   color: white;
@@ -582,11 +648,9 @@ h1 {
   font-size: 1.1rem;
   transition: background-color 0.3s;
 }
-
 .btn-start-main:hover {
   background: #45a049;
 }
-
 /* Game Stats Responsive */
 .game-stats {
   display: flex;
@@ -595,7 +659,6 @@ h1 {
   margin: 15px 0;
   flex-wrap: wrap;
 }
-
 .stat {
   background: #4CAF50;
   color: white;
@@ -607,7 +670,6 @@ h1 {
   min-width: 120px;
   max-width: 200px;
 }
-
 .stat.timer {
   background: #FF9800;
 }
@@ -615,11 +677,10 @@ h1 {
 /* Botes Responsive */
 .botes {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(6, 2fr);
   gap: 10px;
   margin: 15px 0;
 }
-
 .bote {
   background: #f8f9fa;
   padding: 10px;
@@ -630,7 +691,6 @@ h1 {
   align-items: center;
   justify-content: center;
 }
-
 .bote img {
   width: 100%;
   max-width: 50px;
@@ -645,7 +705,6 @@ h1 {
   margin: 15px 0;
   padding: 0 10px;
 }
-
 .current-item {
   background: white;
   padding: 15px;
@@ -654,21 +713,34 @@ h1 {
   display: inline-block;
   max-width: 100%;
 }
-
 .current-item.correct {
   border: 3px solid #4CAF50;
 }
-
 .current-item.wrong {
   border: 3px solid #F44336;
 }
-
 .basura-item {
   width: 70px;
   height: 70px;
   max-width: 100%;
   cursor: grab;
   object-fit: contain;
+  touch-action: none;
+}
+.basura-item:active {
+  cursor: grabbing;
+}
+
+/* arrastre en movil */
+.fantasma-arrastre {
+  position: fixed;
+  width: 70px;
+  height: 70px;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.5;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+  transition: opacity 0.2s ease;
 }
 
 .message-area {
@@ -679,7 +751,6 @@ h1 {
   justify-content: center;
   padding: 0 10px;
 }
-
 .message-area p {
   padding: 8px 15px;
   border-radius: 15px;
@@ -688,18 +759,14 @@ h1 {
   text-align: center;
   width: 100%;
 }
-
 .correct {
   background: #4CAF50;
   color: white;
 }
-
 .wrong {
   background: #F44336;
   color: white;
 }
-
-
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -713,7 +780,6 @@ h1 {
   z-index: 1000;
   padding: 1rem;
 }
-
 .modal-content {
   background: white;
   border-radius: 12px;
@@ -725,32 +791,25 @@ h1 {
   position: relative;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 }
-
-
 .guide-subtitle {
   color: #666;
   text-align: center;
   margin-bottom: 20px;
   font-style: italic;
 }
-
-/* Info Section Responsive */
 .info-section h3 {
   margin: 15px 0;
   text-align: center;
 }
-
 .info-section {
   margin: 15px 0;
   text-align: left;
 }
-
 .color-guide {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
 }
-
 .color-item {
   display: flex;
   align-items: flex-start;
@@ -760,29 +819,23 @@ h1 {
   border-radius: 6px;
   flex-direction: column;
 }
-
 .color-sample {
   width: 40px;
   height: 40px;
   object-fit: cover;
   border-radius: 4px;
 }
-
 .color-info {
   flex: 1;
 }
-
 .color-info strong {
   font-size: 0.9rem;
 }
-
 .color-info p,
 .color-info small {
   font-size: 0.8rem;
   margin: 2px 0;
 }
-
-/* Buttons */
 .btn-warning, .btn-secondary, .btn-primary, .btn-info,.start-game-btn {
   padding: 10px 20px;
   border-radius: 20px;
@@ -794,22 +847,18 @@ h1 {
   width: 100%;
   max-width: 200px;
 }
-
 .btn-warning {
   background: #FF9800;
   color: white;
 }
-
 .btn-secondary {
   background: #6c757d;
   color: white;
 }
-
 .btn-primary, .start-game-btn {
   background: #4CAF50;
   color: white;
 }
-
 .btn-save {
   background: #2196F3;
   color: white;
@@ -822,13 +871,10 @@ h1 {
   width: 100%;
   max-width: 250px;
 }
-
 .btn-save:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
 }
-
-/* Modal Actions */
 .modal-actions {
   display: flex;
   justify-content: center;
@@ -836,15 +882,12 @@ h1 {
   margin-top: 15px;
   flex-wrap: wrap;
 }
-
-
 .result-stats {
   display: flex;
   flex-direction: column;
   gap: 8px;
   margin: 15px 0;
 }
-
 .result-stat {
   background: #f8f9fa;
   padding: 12px;
@@ -852,7 +895,6 @@ h1 {
   font-weight: 600;
   font-size: 0.9rem;
 }
-
 .result-message {
   background: #E8F5E8;
   padding: 12px;
@@ -862,52 +904,43 @@ h1 {
   font-weight: 500;
   font-size: 0.9rem;
 }
-
 .score-actions {
   margin: 15px 0;
 }
-
 .login-warning {
   color: #ff6b6b;
   font-size: 0.8rem;
   margin-top: 5px;
 }
 
-/* Responsive Design */
+/* Responsive */
 @media (max-width: 768px) {
   .initial-actions {
     flex-direction: column;
     align-items: center;
   }
-  
   .btn-start-main {
     width: 100%;
     max-width: 250px;
   }
-  
   .color-guide {
     grid-template-columns: repeat(2, 1fr);
   }
-  
   .botes {
     grid-template-columns: repeat(3, 1fr);
   }
 }
-
 @media (max-width: 480px) {
   .color-guide {
-    grid-template-columns: 1fr;
+    grid-template-columns: 3, 1fr;
   }
-  
   .botes {
     grid-template-columns: repeat(2, 1fr);
   }
-  
   .modal-actions {
     flex-direction: column;
     align-items: center;
   }
-  
   .modal-actions button {
     width: 100%;
     max-width: 250px;
