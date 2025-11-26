@@ -5,7 +5,7 @@
         <!-- Sección Información -->
         <div class="footer-section animate-on-scroll">
           <div class="footer-logo">
-            <h3>Salvambiente</h3>
+            <h3>SalvAmbiente</h3>
           </div>
           <p class="footer-description">
             Pequeños cambios, generan impacto. Sé parte de este pequeño inicio hacia el movimiento sostenible.

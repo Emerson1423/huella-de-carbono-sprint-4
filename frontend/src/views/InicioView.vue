@@ -129,7 +129,7 @@ export default {
   min-height: 705px;
   max-height: 300px;
   overflow: hidden;
-  background-color: #ffffff;
+  background-color: #f4fdf6;
 }
 
 .slide {
@@ -207,7 +207,7 @@ export default {
   margin: 50px 0 40px 0;
 }
 
-.cards {
+  .cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 35px;
@@ -391,7 +391,6 @@ h1 {
   }
 }
 
-/* Móviles grandes (481px - 575px) */
 @media (max-width: 575px) {
   .contenido-inicio {
     padding: 20px 10px 0 10px;
@@ -425,13 +424,13 @@ h1 {
   }
   
   .cards {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: 18px;
     padding: 0 10px;
   }
 }
 
-/* Móviles pequeños (360px - 480px) */
+/* Móviles pequeños (360px - 480px): intentamos mantener 2 columnas en la mayoría de smartphones, salvo muy pequeños */
 @media (max-width: 480px) {
   .contenido-inicio {
     padding: 16px 8px 0 8px;
@@ -464,12 +463,13 @@ h1 {
   }
   
   .cards {
-    gap: 15px;
-    padding: 0 8px;
+    /* Mantener 2 columnas en móviles tal como se solicitó (2xN) pero con tamaños optimizados */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 0 6px;
   }
 }
 
-/* Móviles muy pequeños (hasta 359px) */
 @media (max-width: 359px) {
   .contenido-inicio {
     padding: 12px 6px 0 6px;
@@ -497,6 +497,7 @@ h1 {
   }
   
   .cards {
+    grid-template-columns: 1fr;
     gap: 12px;
   }
 }

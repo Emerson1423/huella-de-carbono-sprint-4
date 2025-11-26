@@ -4,7 +4,7 @@
   <div class="historial-page">
     <div class="historial-header">
       <h1>Tu Historial Completo</h1>
-      <button @click="irACalculadora" class="btn-action">➕ Nueva Calculación</button>
+      <button @click="irACalculadora" class="btn-action">Nueva Calculación</button>
     </div>
 
     <!-- Filtros -->
@@ -136,20 +136,20 @@ export default {
 
     formatoTransporte(transporte) {
       const formatos = {
-        coche: '🚗 Coche',
-        moto: '🏍️ Moto',
-        autobus: '🚌 Autobús',
-        bicicleta: '🚲 Bicicleta',
-        "a pie": '🚶 A pie'
+        coche: 'Coche',
+        moto: 'Moto',
+        autobus: 'Autobús',
+        bicicleta: 'Bicicleta',
+        "a pie": 'A pie'
       };
       return formatos[transporte] || transporte;
     },
 
     formatoReciclaje(reciclaje) {
-      if (!reciclaje || reciclaje === 'no_reciclo') return '❌ No recicla';
+      if (!reciclaje || reciclaje === 'no_reciclo') return 'No recicla';
       const materiales = reciclaje.split(',');
       return materiales.map(mat => {
-        const iconos = { plastico: '🥤', papel: '📄', vidrio: '🍷', carton: '📦' };
+        const iconos = { plastico: '', papel: '', vidrio: '', carton: '' };
         return `${iconos[mat] || ''} ${mat}`;
       }).join(', ');
     },

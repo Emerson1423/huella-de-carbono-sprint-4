@@ -269,11 +269,19 @@ export default {
 </script>
 
 <style>
+:root {
+  --header-height: 60px;
+}
+
 body {
   margin: 0;
   padding: 0;
   font-family: 'Poppins', sans-serif;
-  background-color: rgb(255, 255, 255);
+  background-color: #f4fdf6;
+}
+
+main, #app-root, .app-content, body > .content-root {
+  padding-top: var(--header-height);
 }
 
 .header {
@@ -583,6 +591,24 @@ body {
     padding: 1rem;
   }
 
+  /* Ajustes para móvil: evitar que el logo haga la navbar muy alta/ancha */
+  .header-container {
+    height: 56px; /* menos altura para móviles */
+  }
+
+  /* Reducimos la variable --header-height para que el padding se adapte */
+  :root {
+    --header-height: 56px;
+  }
+
+  .logo {
+    margin-left: 12px; /* menos espacio lateral */
+  }
+
+  .logo-img {
+    height: 46px; /* logo más pequeño en móvil */
+  }
+
   .menu-toggle {
     display: block;
     position: absolute;
@@ -607,7 +633,8 @@ body {
     overflow-y: auto;
     padding-top: 70px;
     will-change: transform;
-    background-image: linear-gradient(rgb(255, 255, 255), rgba(77, 165, 0, 0.173));
+    /* Usamos el mismo color del fondo del sitio para que el panel lateral combine mejor */
+    background-image: linear-gradient(#f4fdf6, rgba(244, 253, 246, 0.95));
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

@@ -630,7 +630,8 @@ console.log('Todas las claves de hábitos:', Object.keys(localStorage).filter(k 
   
 }
 .contenido-habitos{
-  margin-top: 100px;
+  /* Usar la altura del header para no crear tanto espacio extra */
+  margin-top: calc(var(--header-height, 60px) + 8px);
   font-family: 'Poppins', sans-serif;
 }
 
@@ -649,7 +650,8 @@ console.log('Todas las claves de hábitos:', Object.keys(localStorage).filter(k 
 /* Grid de tarjetas */
 .cards-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  /* Por defecto en móvil mostrar 2 columnas para 2x2; si es muy estrecho caer a 1 */
+  grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
   margin-bottom: 2rem;
   padding: 0 1.5rem;
@@ -657,7 +659,7 @@ console.log('Todas las claves de hábitos:', Object.keys(localStorage).filter(k 
 
 @media (min-width: 600px) {
   .cards-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -680,7 +682,7 @@ console.log('Todas las claves de hábitos:', Object.keys(localStorage).filter(k 
   align-items: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
-  min-height: 350px;
+  min-height: 320px;
 }
 
 .viewcard:hover {
@@ -692,7 +694,7 @@ console.log('Todas las claves de hábitos:', Object.keys(localStorage).filter(k 
 .card-img {
   width: 100%;
   max-width: 400px;
-  height: 180px;
+  height: 160px;
   object-fit: cover;
   border-radius: 8px;
   margin-bottom: 1rem;
@@ -715,16 +717,18 @@ console.log('Todas las claves de hábitos:', Object.keys(localStorage).filter(k 
 }
 
 /* Botón de tarjeta */
-.card-btn {
+.card-btn, .filter-btn {
   background: #2e7d32;
   color: #fff;
   border: none;
   border-radius: 6px;
   padding: 0.5rem 1.2rem;
-  cursor: pointer;
+  cursor: pointer; 
   font-weight: 500;
   transition: all 0.2s ease;
   margin-top: auto; 
+  width: min(70%, 100px);
+  align-self: center;
 }
 
 .card-btn:hover {
@@ -755,8 +759,8 @@ console.log('Todas las claves de hábitos:', Object.keys(localStorage).filter(k 
 
 @media (max-width: 768px) {
   .img-hab {
-    height: 300px;
-    max-width: 90%;
+    height: 260px;
+    max-width: 92%;
   }
   
   .title-habito {
@@ -767,7 +771,7 @@ console.log('Todas las claves de hábitos:', Object.keys(localStorage).filter(k 
 /* Responsive para móviles */
 @media (max-width: 480px) {
   .img-hab {
-    height: 250px;
+    height: 220px;
     border-radius: 12px;
   }
   
@@ -779,6 +783,38 @@ console.log('Todas las claves de hábitos:', Object.keys(localStorage).filter(k 
   .img-container {
     margin: 1.5rem 0;
     padding: 0 0.5rem;
+  }
+
+  /* Mejorar presentación de tarjetas en pantallas muy pequeñas */
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 0 8px;
+  }
+
+  .viewcard {
+    min-height: 220px;
+    padding: 12px;
+  }
+
+  .card-img {
+    height: 110px;
+  }
+
+  .card-title {
+    font-size: 1rem;
+  }
+
+  .card-desc {
+    font-size: 0.85rem;
+  }
+
+  .filter-btn {
+    /* más compacto en pantallas muy pequeñas */
+    width: 60%;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    margin-top: 8px;
   }
 }
 

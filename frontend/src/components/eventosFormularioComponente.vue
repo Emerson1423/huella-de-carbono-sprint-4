@@ -255,11 +255,11 @@
         <p class="descripcion">{{ evento.descripcion }}</p>
         
         <div class="evento-info">
-          <p><strong>📅 Fecha:</strong> {{ formatearFecha(evento.fecha) }}</p>
-          <p><strong>🕐 Hora:</strong> {{ evento.hora }}</p>
-          <p><strong>📍 Ubicación:</strong> {{ evento.ubicacion }}</p>
-          <p><strong>🏷️ Categoría:</strong> {{ obtenerNombreCategoria(evento.categoria) }}</p>
-          <p><strong>👤 Organizador:</strong> {{ evento.organizador?.nombre }}</p>
+          <p><strong>Fecha:</strong> {{ formatearFecha(evento.fecha) }}</p>
+          <p><strong>Hora:</strong> {{ evento.hora }}</p>
+          <p><strong>Ubicación:</strong> {{ evento.ubicacion }}</p>
+          <p><strong>Categoría:</strong> {{ obtenerNombreCategoria(evento.categoria) }}</p>
+          <p><strong>Organizador:</strong> {{ evento.organizador?.nombre }}</p>
           <p>
             <strong>Estado:</strong> 
             <span :class="['estado-badge', evento.estado]">{{ evento.estado }}</span>

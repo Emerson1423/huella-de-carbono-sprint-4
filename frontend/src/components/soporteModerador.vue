@@ -79,7 +79,7 @@
       </div>
 
       <div v-else-if="mensajes.length === 0" class="empty-state">
-        <p>📭 No hay mensajes para mostrar</p>
+        <p>No hay mensajes para mostrar</p>
       </div>
 
       <div v-else class="mensajes-lista">
@@ -113,10 +113,10 @@
                 {{ mensaje.categoria_icono }} {{ mensaje.categoria_nombre }}
               </span>
               <span class="usuario">
-                👤 {{ mensaje.nombre_usuario }}
+                {{ mensaje.nombre_usuario }}
               </span>
               <span v-if="mensaje.total_respuestas > 0" class="respuestas">
-                💬 {{ mensaje.total_respuestas }} respuesta(s)
+                {{ mensaje.total_respuestas }} respuesta(s)
               </span>
             </div>
           </div>
@@ -228,7 +228,7 @@
               >
                 <div class="respuesta-header">
                   <span class="respuesta-autor">
-                    {{ respuesta.es_admin ? '👨‍💼 Admin' : '👤 ' + respuesta.nombre_usuario }}
+                    {{ respuesta.es_admin ? ' Admin' : ' ' + respuesta.nombre_usuario }}
                   </span>
                   <span class="respuesta-fecha">
                     {{ formatearFecha(respuesta.fecha_creacion) }}

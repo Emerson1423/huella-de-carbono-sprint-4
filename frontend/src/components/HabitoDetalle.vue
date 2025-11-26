@@ -68,7 +68,7 @@
                   class="video-thumbnail"
                 />
                 <div class="play-button">
-                  <div class="play-icon">▶ Duración</div> 
+                  <div class="play-icon">Duración</div> 
                 </div>
                 <div class="video-duracion">{{ video.duracion }}</div>
               </div>
