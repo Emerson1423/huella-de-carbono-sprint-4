@@ -3,28 +3,35 @@
     <!-- Header con estadísticas -->
     <div class="stats-grid">
       <div class="stat-card pendiente">
-        <div class="stat-icon">⏳</div>
+        <div class="stat-icon">
+          <img :src="pendienteIcono" class="icon-img" /></div>
         <div class="stat-info">
           <h3>{{ estadisticas.pendientes || 0 }}</h3>
           <p>Pendientes</p>
         </div>
       </div>
       <div class="stat-card en-proceso">
-        <div class="stat-icon">⚙️</div>
+        <div class="stat-icon">
+          <img :src="procesoIcono" class="icon-img" />
+        </div>
         <div class="stat-info">
           <h3>{{ estadisticas.en_proceso || 0 }}</h3>
           <p>En Proceso</p>
         </div>
       </div>
       <div class="stat-card resuelto">
-        <div class="stat-icon">✓</div>
+        <div class="stat-icon">
+          <img :src="resueltoIcono" class="icon-img" />
+        </div>
         <div class="stat-info">
           <h3>{{ estadisticas.resueltos || 0 }}</h3>
           <p>Resueltos</p>
         </div>
       </div>
       <div class="stat-card total">
-        <div class="stat-icon">📊</div>
+        <div class="stat-icon">
+          <img :src="totalIcono" class="icon-img" />
+        </div>
         <div class="stat-info">
           <h3>{{ estadisticas.total_mensajes || 0 }}</h3>
           <p>Total</p>
@@ -266,6 +273,10 @@
 </template>
 
 <script>
+import pendienteIcono from '@/assets/icons/pendientes.png'
+import procesoIcono from '@/assets/icons/proceso.png' 
+import resueltoIcono from '@/assets/icons/resuelto.png' 
+import totalIcono from '@/assets/icons/total.png' 
 export default {
   name: 'AdminSoporteDashboard',
   data() {
@@ -279,6 +290,10 @@ export default {
       nuevaPrioridad: '',
       cargando: false,
       enviandoRespuesta: false,
+      pendienteIcono,
+      resueltoIcono,
+      procesoIcono,
+      totalIcono,
       filtros: {
         estado: '',
         prioridad: '',
@@ -568,8 +583,19 @@ export default {
   transform: translateY(-2px);
 }
 
+.icon-img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
 .stat-icon {
-  font-size: 2.5rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .stat-info h3 {

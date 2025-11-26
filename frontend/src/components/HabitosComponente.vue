@@ -545,15 +545,15 @@ export default {
   }
   
   // CAMBIO 1: Obtener el ID del usuario actual
-  const user = localStorage.getItem('user');
-  if (!user) {
+  const usuario = localStorage.getItem('usuario');
+  if (!usuario) {
     alert(' Debes iniciar sesión para agregar hábitos.');
     return;
   }
   
   let userData;
   try {
-    userData = JSON.parse(user);
+    userData = JSON.parse(usuario);
   } catch (error) {
     console.error('Error al parsear usuario:', error);
     alert('Error al obtener información del usuario.');
@@ -566,7 +566,7 @@ export default {
   const claveHabitos = `userHabitos_${usuarioId}`;
   let habitosGuardados = JSON.parse(localStorage.getItem(claveHabitos) || '[]');
 
-console.log('Usuario actual:', localStorage.getItem('user'));
+console.log('Usuario actual:', localStorage.getItem('usuario'));
 console.log('Todas las claves de hábitos:', Object.keys(localStorage).filter(k => k.startsWith('userHabitos_')));
   
   // Verificar límite máximo de 3 hábitos
