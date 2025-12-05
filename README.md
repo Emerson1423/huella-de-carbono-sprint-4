@@ -230,17 +230,17 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más det
 
 ## 👥 Autores
 
-- **Tu Nombre** - *Trabajo Inicial* - [tu-usuario](https://github.com/tu-usuario)
-
+- **Emerson Aldahir Portillo Segovia** - https://github.com/Emerson1423
+- **Litzy Cecibel Argueta Perez** - https://github.com/Litzyzzz
+- **Yohana Griselda Villalobos Segovia** - https://github.com/grisellse
+  
 ## 🙏 Agradecimientos
 
 - A todos los que contribuyeron a este proyecto
-- Inspiración
-- Referencias
 
 ## 📞 Contacto
 
-Para preguntas o sugerencias, contacta a: tu.email@ejemplo.com
+Para preguntas o sugerencias, contacta a: equiposalvambiente@gmail.com
 
 ---
 
